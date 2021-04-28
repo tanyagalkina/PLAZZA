@@ -14,10 +14,10 @@ class Error : public std::exception
         std::string _message;
 };
 
-class WrongArugument : public Error
+class WrongArgument : public Error
 {
 public:
-    WrongArugument(const std::string &message)
+    WrongArgument(const std::string &message)
         : Error(message)
     {}
 };
