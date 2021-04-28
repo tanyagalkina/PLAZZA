@@ -22,4 +22,12 @@ public:
     {}
 };
 
+class ParseError : public Error
+{
+public:
+    ParseError(const std::string &message)
+        : Error(message)
+    {}
+};
+
 #endif //ERROR_HPP_
