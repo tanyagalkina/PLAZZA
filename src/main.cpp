@@ -68,8 +68,9 @@ void errorhandling(int ac, char **av)
     if (ac != 4)
         throw BadArgument("rerun with -h");
 
-    if (strlen(av[1]) != strlen(std::to_string(std::stof(av[1])).c_str()))
-        throw BadArgument("rerun with -h");
+    //TODO maybe fix this later
+    //if (strlen(av[1]) != strlen(std::to_string(std::stof(av[1])).c_str()))
+        //throw BadArgument("rerun with -dh");
     if (strlen(av[2]) != strlen(std::to_string(std::stoi(av[2])).c_str()))
         throw BadArgument("rerun with -h");
     if (strlen(av[3]) != strlen(std::to_string(std::stoi(av[3])).c_str()))
@@ -80,7 +81,7 @@ int main(int ac, char **av)
 {
     try {
         errorhandling(ac, av);
-    } catch (const BadArgument &e) {
+    } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
         return 84;
     }
