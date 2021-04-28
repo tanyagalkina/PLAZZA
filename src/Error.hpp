@@ -30,4 +30,12 @@ public:
     {}
 };
 
+class BadArgument : public Error
+{
+public:
+    BadArgument(const std::string &message)
+            : Error(message)
+    {}
+};
+
 #endif //ERROR_HPP_

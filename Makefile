@@ -28,6 +28,8 @@ all: 				plazza
 NAME 				= plazza
 
 SRC 				= src/main.cpp 	\
+					  src/Utils.cpp	\
+					  src/Reception.cpp\
 
 OBJ  				= $(SRC:.cpp=.o)
 LIBS 				= -lpthread
