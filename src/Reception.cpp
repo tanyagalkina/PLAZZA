@@ -38,8 +38,23 @@ Reception::Reception(float mulitpy, int cooks, int refill)
 {
 }
 
+using Order = std::vector<order_t>;
+
 void Reception::run()
 {
+    std::string input;
+    Order orders;
+
+    while (true) {
+        std::getline(std::cin, input); 
+        try {
+            orders = parse(input);
+        } catch (const ParseError &e) {
+            std::cerr << e.what() << std::endl;
+        }
+
+    }
+
     std::cout << "running" << std::endl;
 }
 

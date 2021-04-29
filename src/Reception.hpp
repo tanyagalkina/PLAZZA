@@ -35,6 +35,8 @@ public:
     Reception(float, int, int);
     std::vector<order_t> parse(const std::string &str);
     void run(); /* MAIN LOOP */
+
+private:
     PizzaType strToPizzaType(std::string str);
     PizzaSize strToPizzaSize(std::string str);
 
