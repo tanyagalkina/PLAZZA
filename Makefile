@@ -30,6 +30,15 @@ NAME 				= plazza
 SRC 				= src/main.cpp 	\
 					  src/Utils.cpp	\
 					  src/Reception.cpp\
+					  src/ThreadPool.cpp\
+
+TEST_SRC 			= src/Utils.cpp	\
+					  src/Reception.cpp\
+					  src/ThreadPool.cpp\
+
+TEST 				= test/thread.cpp
+TEST_OBJ 			= $(TEST:.cpp=.o)
+TEST_NAME			= tests
 
 OBJ  				= $(SRC:.cpp=.o)
 LIBS 				= -lpthread
@@ -44,8 +53,13 @@ clean:
 
 fclean: clean
 	@rm -f $(NAME)
+	@rm -f $(TEST_NAME)
 	@echo -e "$(RED)$(BOLD)* * * * *  CLEANED ALL  * * * * *$(END)"
 
+test: $(TEST_OBJ)
+	@$(CXX) -o $(TEST_NAME) $(TEST_SRC) $(TEST_OBJ) $(LIBS) -lcriterion
+	@echo -e "$(GREEN)* * * * * COMPLETED TESTS * * * * *$(END)\n"
+	./tests
 
 src/%.o:	src/%$(EXTENSION)
 	@$(CXX) $(CFLAGS) $(LIBS) -c -o $@ $<							\
