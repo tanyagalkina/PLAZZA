@@ -8,6 +8,7 @@
 #include <thread>
 #include <future>
 #include <deque>
+#include "Error.hpp"
 
 /* Possible usage of this ThreadPool :) */
 

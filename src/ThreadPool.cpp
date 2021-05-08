@@ -2,6 +2,9 @@
 
 ThreadPool::ThreadPool(std::size_t threads)
 {
+    if (threads > std::thread::hardware_concurrency())
+        throw TooManyThread("You tried to create too many threads");
+
     for (std::size_t i = 0; i < threads; i++) {
         _cooks.push_back(std::shared_ptr<std::thread>(new std::thread(&ThreadPool::exec, this))); }
 }
