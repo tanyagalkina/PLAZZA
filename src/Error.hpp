@@ -38,4 +38,12 @@ public:
     {}
 };
 
+class TooManyThread : public Error
+{
+public:
+    TooManyThread(const std::string &message)
+            : Error(message)
+    {}
+};
+
 #endif //ERROR_HPP_
