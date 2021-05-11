@@ -11,16 +11,16 @@ std::vector<order_t> Reception::parse(const std::string &str)
 {
     int howMany;
     std::vector<order_t> order;
-    std::vector<std::string> lines = split(str, ';');
+
+    auto lines = Parser::parseString(str, ";");
 
     for (const std::string &line : lines) {
-        std::vector<std::string> parts = split(line, ' ');
+        auto parts = Parser::parseString(line);
 
         if (parts.size() != 3 || parts[2][0] != 'x')
             throw ParseError("bad input");
 
-        parts[2].erase(std::remove(parts[2].begin(), parts[2].end(), 'x'), parts[2].end());
-        howMany = std::stoi(parts[2]);
+        howMany = Parser::parseStringToInt(parts[2]);
 
         if (howMany >= 100 || howMany <= 0)
             throw ParseError("bad number");

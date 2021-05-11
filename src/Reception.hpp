@@ -6,6 +6,7 @@
 #include <algorithm>
 
 #include "Utils.hpp"
+#include "Parser.hpp"
 
 enum PizzaType
 {
