@@ -14,11 +14,11 @@ Messenger::Messenger()
 
 Messenger::~Messenger()
 {
-    for (int i = 0; i < this->ins.size(); i++) {
-        mq_close(this->ins[i].second);
+    for (int i = 0; i < this->orders.size(); i++) {
+        mq_close(this->oredrs[i].second);
     }
-    for (int j = 0; j < this->outs.size(); j++) {
-        mq_close(this->outs[j].second);
+    for (int j = 0; j < this->deliveries.size(); j++) {
+        mq_close(this->deliveries[j].second);
     }
 }
 
