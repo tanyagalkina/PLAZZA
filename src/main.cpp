@@ -1,54 +1,21 @@
-/*
-Reception -> Class
-
-
-
-Kitchen -> Class
- - bool kitchenAvailable(Pizza) is it ready to make this pizza
-
-
-KitchenState -> Enum
- - OK
- - KO
- - Pending
-*/
-
-/*      PutInKitchen 
-        for (kitchen in kitchens)
-            KitchenState = kitchenAvailable(current Pizza to check) 
-                if true:
-                    balance the pizzas to all the available kitchens
-                if false:
-                    create new kitchen
-
-        return pid 
-*/
-
-// TODO figure out products size?
-// child pool (namedpipe, shared memory ...)
-// pthread or std::thread?
-//
-/*
-    parsingArguments
-    while (1):
-        order = takeOrder() -> list of pizzas
-
-        for (pizza in order)
-            putInKitchen
-
-*/
-
+#include <chrono>
 #include <exception>
+#include <fstream>
 #include <iostream>
 #include <ostream>
 #include <stdio.h>
 #include <string.h>
+#include <thread>
 #include <vector>
 #include <sstream>
 #include <algorithm>
+#include <memory>
 
 #include "Error.hpp"
 #include "Reception.hpp"
+#include "ThreadPool.hpp"
+#include "Message.hpp"
+
 
 
 void usage()
@@ -79,8 +46,27 @@ void errorhandling(int ac, char **av)
         throw BadArgument("rerun with -h");
 }
 
+// @todo: think about a clever logging system
+
+// std::fstream Log()
+//{
+    //std::fstream file("logfile", std::fstream::out | std::fstream::app);
+    //return file;
+//}
+//static std::fstream mlog("logfile", std::fstream::out | std::fstream::app);
+
+void print(const std::string &msg)
+{
+    std::cout << msg << std::endl;
+}
+
+
 int main(int ac, char **av)
 {
+
+
+    return 0;
+
     try {
         errorhandling(ac, av);
     } catch (const std::exception &e) {

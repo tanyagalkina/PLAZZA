@@ -17,13 +17,13 @@ std::vector<order_t> Reception::parse(const std::string &str)
         std::vector<std::string> parts = split(line, ' ');
 
         if (parts.size() != 3 || parts[2][0] != 'x')
-            throw ParseError ("bad input");
+            throw ParseError("bad input");
 
         parts[2].erase(std::remove(parts[2].begin(), parts[2].end(), 'x'), parts[2].end());
         howMany = std::stoi(parts[2]);
 
         if (howMany >= 100 || howMany <= 0)
-            throw ParseError ("bad number");
+            throw ParseError("bad number");
 
         while (howMany-- != 0) {
             order_t tmp = { strToPizzaType(parts[0]), strToPizzaSize(parts[1]) };
@@ -38,21 +38,19 @@ Reception::Reception(float mulitpy, int cooks, int refill)
 {
 }
 
-using Order = std::vector<order_t>;
 
 void Reception::run()
 {
     std::string input;
-    Order orders;
+    std::vector<order_t> orders;
 
     while (true) {
-        std::getline(std::cin, input); 
+        std::getline(std::cin, input);
         try {
             orders = parse(input);
         } catch (const ParseError &e) {
             std::cerr << e.what() << std::endl;
         }
-
     }
 
     std::cout << "running" << std::endl;

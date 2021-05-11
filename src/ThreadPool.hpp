@@ -55,6 +55,13 @@ public:
     /* this gets called after all tasks have been added */
     void joinAll();
 
+    int cooksAvailable()
+    {
+        //@todo implement this by using the ipc
+        //return the number of available cooks
+        return 0;
+    }
+
 private:
     /* actual function that get executed by the thread */
     void exec();

@@ -29,7 +29,7 @@ typedef struct {
     PizzaSize _size;
 } order_t;
 
-class Reception 
+class Reception
 {
 public:
     Reception(float, int, int);

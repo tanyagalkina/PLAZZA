@@ -31,6 +31,8 @@ SRC 				= src/main.cpp 	\
 					  src/Utils.cpp	\
 					  src/Reception.cpp\
 					  src/ThreadPool.cpp\
+					  src/Kitchen.cpp\
+					  src/Message.cpp\
 
 TEST_SRC 			= src/Utils.cpp	\
 					  src/Reception.cpp\
