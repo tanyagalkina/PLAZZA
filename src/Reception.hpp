@@ -36,6 +36,7 @@ public:
     Reception(float, int, int);
     std::vector<order_t> parse(const std::string &str);
     void run(); /* MAIN LOOP */
+    void getInput();
 
 private:
     PizzaType strToPizzaType(std::string str);
@@ -45,7 +46,7 @@ private:
     float _multiply;
     int _cooks;
     int _refill;
-
+    std::vector<order_t> _order;
 };
 
 #endif //RECEPTION_HPP_

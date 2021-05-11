@@ -7,30 +7,27 @@ std::ostream &operator<<(std::ostream &out, order_t &order)
     return out;
 }
 
-std::vector<order_t> Reception::parse(const std::string &str)
+void Reception::getInput()
 {
-    int howMany;
-    std::vector<order_t> order;
+    _order.clear();
+    std::string input;
+    std::getline(std::cin, input);
 
-    auto lines = Parser::parseString(str, ";");
+    auto lines = Parser::parseString(input, ";");
 
-    for (const std::string &line : lines) {
+    for (const auto &line : lines) {
         auto parts = Parser::parseString(line);
-
+        //@todo check for STATUS as a vaild input
         if (parts.size() != 3 || parts[2][0] != 'x')
             throw ParseError("bad input");
-
-        howMany = Parser::parseStringToInt(parts[2]);
-
-        if (howMany >= 100 || howMany <= 0)
+        int howMany = Parser::parseStringToInt(parts[2]);
+        if (howMany > 99 || howMany < 1)
             throw ParseError("bad number");
-
-        while (howMany-- != 0) {
-            order_t tmp = { strToPizzaType(parts[0]), strToPizzaSize(parts[1]) };
-            order.push_back(tmp);
+        while (howMany--) {
+            order_t order = { strToPizzaType(parts[0]), strToPizzaSize(parts[1]) };
+            _order.push_back(order);
         }
     }
-    return order;
 }
 
 Reception::Reception(float mulitpy, int cooks, int refill)
@@ -38,16 +35,14 @@ Reception::Reception(float mulitpy, int cooks, int refill)
 {
 }
 
-
 void Reception::run()
 {
     std::string input;
     std::vector<order_t> orders;
 
     while (true) {
-        std::getline(std::cin, input);
         try {
-            orders = parse(input);
+            getInput();
         } catch (const ParseError &e) {
             std::cerr << e.what() << std::endl;
         }
