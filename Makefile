@@ -31,6 +31,7 @@ SRC 				= src/main.cpp 	\
 					  src/Utils.cpp	\
 					  src/Reception.cpp\
 					  src/ThreadPool.cpp\
+					  src/Parser.cpp\
 
 TEST_SRC 			= src/Utils.cpp	\
 					  src/Reception.cpp\
