@@ -2,7 +2,7 @@
 #include "Error.hpp"
 
 
-static std::vector<std::string> split(const std::string &s, const char *delim)
+std::vector<std::string> Parser::split(const std::string &s, const char *delim)
 {
     std::stringstream stringStream(s);
     std::string line;
@@ -21,7 +21,7 @@ static std::vector<std::string> split(const std::string &s, const char *delim)
     return words;
 }
 
-static std::vector<std::string> parseFromFd(int fd, size_t bytes, const char *delim)
+std::vector<std::string> Parser::parseFromFd(int fd, size_t bytes, const char *delim)
 {
     if (strcmp(delim, "") == 0)
         throw ParseError("Delimiter is empty");
@@ -40,11 +40,39 @@ static std::vector<std::string> parseFromFd(int fd, size_t bytes, const char *de
     return ret;
 }
 
-static std::vector<std::string> parseString(std::string s, const char *delim)
+std::vector<std::string> Parser::parseFromFile(std::string path, const char *delim)
+{
+    if (strcmp(delim, "") == 0)
+        throw ParseError("Delimiter is empty");
+    if (path.empty())
+        throw ParseError("string is empty");
+    std::string line;
+    std::ifstream file (path);
+    std::vector<std::string> text;
+    if (file.is_open())
+        while (getline(file, line))
+            if (!line.empty())
+                text.push_back(line);
+    file.close();
+    return (text);
+}
+
+std::vector<std::string> Parser::parseString(std::string s, const char *delim)
 {
     if (s.empty())
         throw ParseError("string is empty");
     if (strcmp(delim, "") == 0)
         throw ParseError("Delimiter is empty");
     return split(s, delim);
+}
+
+int Parser::parseStringToInt(std::string s)
+{
+    if (s.empty())
+        throw ParseError("string is empty");
+    s.erase(remove_if(s.begin(), s.end(), [](char c) { return !isdigit(c); } ), s.end());
+    if (s.empty())
+        throw ParseError("string has no digit");
+    int r = std::stoi(s);
+    return r;
 }
