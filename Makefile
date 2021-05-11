@@ -38,8 +38,13 @@ SRC 				= src/main.cpp 	\
 TEST_SRC 			= src/Utils.cpp	\
 					  src/Reception.cpp\
 					  src/ThreadPool.cpp\
+					  src/Kitchen.cpp\
+					  src/Message.cpp\
+					  src/Parser.cpp\
 
-TEST 				= test/thread.cpp
+TEST 				= test/thread.cpp\
+					  test/parser.cpp\
+
 TEST_OBJ 			= $(TEST:.cpp=.o)
 TEST_NAME			= tests
 
