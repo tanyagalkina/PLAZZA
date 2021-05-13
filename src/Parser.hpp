@@ -10,7 +10,7 @@
 struct OrderPart
 {
     Pizza _pizza;
-    size_t _amount;
+    size_t _amount; //anderen to int
 };
 
 struct Order
