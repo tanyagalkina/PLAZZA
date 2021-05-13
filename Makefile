@@ -28,18 +28,18 @@ all: 				plazza
 NAME 				= plazza
 
 SRC 				= src/main.cpp 	\
-					  src/Utils.cpp	\
 					  src/Reception.cpp\
 					  src/ThreadPool.cpp\
 					  src/Kitchen.cpp\
 					  src/Message.cpp\
+					  src/Messenger.cpp\
 					  src/Parser.cpp\
 
-TEST_SRC 			= src/Utils.cpp	\
-					  src/Reception.cpp\
+TEST_SRC 			= src/Reception.cpp\
 					  src/ThreadPool.cpp\
 					  src/Kitchen.cpp\
 					  src/Message.cpp\
+					  src/Messenger.cpp\
 					  src/Parser.cpp\
 
 TEST 				= test/thread.cpp\
@@ -49,7 +49,7 @@ TEST_OBJ 			= $(TEST:.cpp=.o)
 TEST_NAME			= tests
 
 OBJ  				= $(SRC:.cpp=.o)
-LIBS 				= -lpthread
+LIBS 				= -lpthread -lrt
 
 plazza: $(OBJ)
 	@$(CXX) -o $(NAME) $(OBJ) $(LIBS)
