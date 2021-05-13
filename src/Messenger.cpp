@@ -31,7 +31,7 @@ void Messenger::create_new_pair(int kitchen_id)
 
     attr.mq_maxmsg = 10;
     attr.mq_msgsize = 20;
-    //mq_unlink(name.c_str());
+    mq_unlink(name.c_str());
     mqfd = mq_open(name.c_str(), O_RDWR | O_CREAT, (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH), &attr);
     if (mqfd == -1) {
         std::cerr << "Cannot open message queue.";

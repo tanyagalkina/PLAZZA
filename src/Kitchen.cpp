@@ -2,23 +2,51 @@
 #include "Error.hpp"
 #include <memory>
 
+
+void do_join()
+{
+    std::cout << "Ich bin slave!!\n";
+    sleep(3);
+    Messenger::send_reply_to_reception(6, "worker DONE!");
+
+}
+
+void do_join1()
+{
+    std::cout << "Ich bin slave too!!\n";
+    sleep(3);
+    Messenger::send_reply_to_reception(6, "woker 1I am DON!");
+
+}
+
 Kitchen::Kitchen(int cooks, int ownId)
 {
     std::string buffer;
     this->_ownId = ownId;
 
-    try {
+    /*try {
         this->_pool = std::make_unique<ThreadPool>(cooks);
     } catch (const TooManyThread &e) {
         std::cerr << "ThreadPool could not get created. " << e.what() << std::endl;
-    }
+    }*/
+    struct mq_attr atributes;
     this->initMessageQueue();
     while (1)
     {
+        /*mq_getattr(this->mqfdOrders, &atributes);
+        if (atributes.mq_curmsgs == 0)
+            std::cout << "There are no orders currently\n";
+        //int rc = msgctl()*/
         Messenger::get_order_from_reception(this->mqfdOrders, buffer);
+
         std::cout << "the reception has ordered:" << buffer << std::endl;
-        sleep(3);
-        Messenger::send_reply_to_reception(this->mqfdDeliveries, buffer + "DONE!");
+        //sleep(3);
+        std::thread worker(do_join);
+        std::thread worker1(do_join1);
+        worker.join();
+        worker1.join();
+        sleep(2);
+        //Messenger::send_reply_to_reception(this->mqfdDeliveries, buffer + "DONE!");
 
 
     }

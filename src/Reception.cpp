@@ -1,5 +1,6 @@
 
 #include "Reception.hpp"
+#include "Window.hpp"
 
 /*
 std::ostream &operator<<(std::ostream &out, order_t &order)
@@ -8,75 +9,111 @@ std::ostream &operator<<(std::ostream &out, order_t &order)
     return out;
 }*/
 
-void Reception::getInput()
-{
-    _order.clear();
-    std::string input;
-    std::getline(std::cin, input);
-    _order.push_back(parse_order(input));
 
-    auto new_order = parse_order(input);
-    for (auto order_inside : new_order._parts)
-        std::cout << "Type : " << (int)order_inside._pizza._type << " Size : " <<
-        (int)order_inside._pizza._size << " amount: "<< order_inside._amount << std::endl;
+    void Reception::getInput() {
+        _order.clear();
+        std::string input;
+        std::getline(std::cin, input);
+        _order.push_back(parse_order(input));
 
-    /*auto lines = Parser::parseString(input, ";");
+        auto new_order = parse_order(input);
+        for (auto order_inside : new_order._parts)
+            std::cout << "Type : " << (int) order_inside._pizza._type << " Size : " <<
+                      (int) order_inside._pizza._size << " amount: " << order_inside._amount << std::endl;
 
-    for (const auto &line : lines) {
-        auto parts = Parser::parseString(line);
-        //@todo check for STATUS as a vaild input
-        if (parts.size() != 3 || parts[2][0] != 'x')
-            throw ParseError("bad input");
-        int howMany = Parser::parseStringToInt(parts[2]);
-        if (howMany > 99 || howMany < 1)
-            throw ParseError("bad number");
-        while (howMany--) {
-            order_t order = { strToPizzaType(parts[0]), strToPizzaSize(parts[1]) };
-            _order.push_back(order);
-        }
-    }*/
-}
+        /*auto lines = Parser::parseString(input, ";");
 
-Reception::Reception(float mulitpy, int cooks, int refill)
-    : _multiply(mulitpy), _cooks(cooks), _refill(refill)
-{
-    std::unique_ptr<Messenger> messenger(new Messenger());
-    this->messenger = std::move(messenger);
-    this->_nbKitchens = 0;
-}
-
-void Reception::run()
-{
-    std::string input;
-    std::string buffer;
-    std::vector<Order> orders;
-    this->addKitchen();
-    while (true) {
-        try {
-            getInput();
-        } catch (const ParseError &e) {
-            std::cerr << e.what() << std::endl;
-        }
-        this->messenger->send_order_to_the_kitchen(1, "myinput");
-        sleep(3);
-        this->messenger->rcv_kitchen_reply(1, buffer);
-        std::cout << "this is what the kitchen said: " << buffer << std::endl;
+        for (const auto &line : lines) {
+            auto parts = Parser::parseString(line);
+            //@todo check for STATUS as a vaild input
+            if (parts.size() != 3 || parts[2][0] != 'x')
+                throw ParseError("bad input");
+            int howMany = Parser::parseStringToInt(parts[2]);
+            if (howMany > 99 || howMany < 1)
+                throw ParseError("bad number");
+            while (howMany--) {
+                order_t order = { strToPizzaType(parts[0]), strToPizzaSize(parts[1]) };
+                _order.push_back(order);
+            }
+        }*/
     }
 
-    std::cout << "running" << std::endl;
-}
-
-void Reception::addKitchen()
-{
-    pid_t pid;
-
-    this->_nbKitchens++;
-    this->messenger->create_new_pair(this->_nbKitchens);
-    pid = fork();
-    if (pid == 0) {
-        Kitchen kitchen(this->_cooks, this->_nbKitchens);
+    Reception::Reception(float mulitpy, int cooks, int refill)
+            : _multiply(mulitpy), _cooks(cooks), _refill(refill) {
+        std::unique_ptr<Messenger> messenger(new Messenger());
+        this->messenger = std::move(messenger);
+        this->_nbKitchens = 0;
     }
-}
+
+    void do_loop() {
+        while (1) {
+            std::string input;
+            std::getline(std::cin, input);
+            std::cout << input << std::endl;
+
+        }
+        std::cin.get();
+    }
+
+    void Reception::runWindow()
+    {
+        while (1) {
+            std::string input;
+            std::getline(std::cin, input);
+            std::cout << input << std::endl;
+            // if input == status:
+            //for (alle küchen);
+            //input =  Pizza.orderString;
+            //int küchennumber = algo();
+            this->messenger->send_order_to_the_kitchen(1, input);
+
+        }
+
+
+    }
+
+
+    void Reception::run() {
+        std::string input;
+        std::string buffer;
+        std::vector<Order> orders;
+        this->addKitchen();
+        std::thread window(&Reception::runWindow, this);
+        //std::thread window(do_loop);
+        //andree thread finisch();
+        while (true) {
+            /*try {
+                getInput();
+            } catch (const ParseError &e) {
+                std::cerr << e.what() << std::endl;
+            }*/
+            /*this->messenger->send_order_to_the_kitchen(1, "FirstPizza");
+            this->messenger->send_order_to_the_kitchen(1, "SecondPizza");
+            this->messenger->send_order_to_the_kitchen(1, "ThirdPizza");*/
+
+            //sleep(3);
+            //for (alle queues);
+            this->messenger->rcv_kitchen_reply(1, buffer);
+            if (buffer != "") {
+                std::cout << " this is what the kitchen said: " << buffer << std::endl;
+                buffer = "";
+            }
+        //window.join();
+        }
+
+        std::cout << "running" << std::endl;
+    }
+
+    void Reception::addKitchen() {
+        pid_t pid;
+
+        this->_nbKitchens++;
+        this->messenger->create_new_pair(this->_nbKitchens);
+        pid = fork();
+        if (pid == 0) {
+            Kitchen kitchen(this->_cooks, this->_nbKitchens);
+        }
+    }
 
 /*
 PizzaType Reception::strToPizzaType(std::string str)

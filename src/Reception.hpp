@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <thread>
 
 #include "Parser.hpp"
 #include "Reception.hpp"
@@ -34,27 +35,31 @@ typedef struct {
     PizzaSize _size;
 } order_t;
 */
-class Reception
-{
-public:
-    Reception(float, int, int);
-    std::vector<Order> parse(const std::string &str);
-    void run(); /* MAIN LOOP */
-    void getInput();
+    class Reception {
+    public:
+        Reception(float, int, int);
+
+        std::vector<Order> parse(const std::string &str);
+
+        void run(); /* MAIN LOOP */
+        void getInput();
 
 //private:
 //    PizzaType strToPizzaType(std::string str);
 //    PizzaSize strToPizzaSize(std::string str);
 
-private:
-    float _multiply;
-    int _cooks;
-    int _refill;
-    std::vector<Order> _order;
-    int _nbKitchens;
-    std::unique_ptr<Messenger> messenger;
-    void addKitchen();
+    private:
+        float _multiply;
+        int _cooks;
+        int _refill;
+        std::vector<Order> _order;
+        int _nbKitchens;
+        std::unique_ptr<Messenger> messenger;
+    private:
+        void addKitchen();
+        void runWindow();
 
-};
+    };
+
 
 #endif //RECEPTION_HPP_
