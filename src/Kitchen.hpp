@@ -21,8 +21,14 @@
         int _nbCooks;
         mqd_t mqfdOrders;
         mqd_t mqfdDeliveries;
+        std::mutex mutexOrder;
+        std::mutex mutexDeliv;
+        std::vector<std::shared_ptr<std::thread>> _cooks;
+        std::chrono::time_point<std::chrono::high_resolution_clock> timer;
 
+        void createCook();
         void DoWork(int);
+        void work();
     };
 
 

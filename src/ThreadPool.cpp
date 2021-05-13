@@ -1,4 +1,6 @@
 #include "ThreadPool.hpp"
+#include <ios>
+#include <thread>
 
 ThreadPool::ThreadPool(std::size_t threads)
 {
@@ -23,7 +25,9 @@ void ThreadPool::joinAll()
     _mutex.unlock();
 
     for (auto &cook : _cooks) {
-        cook->join();
+        std::cout << cook->get_id() << ": " << std::boolalpha << cook->joinable() << std::endl;
+        if (cook->joinable())
+            cook->join();
     }
 }
 
@@ -32,25 +36,18 @@ void ThreadPool::exec()
     bool isRunning = true;
 
     while (isRunning) {
-        /* thread stays here if the _mutex is locked so it waits for the others
-         * and dont modify anything that could be modified by another thread at
-         * the same time */
         _mutex.lock();
 
         if (!_orders.empty()) {
             auto order = _orders.front();
             _orders.pop_front();
 
-            /* always unlock after calling lock -> otherwise there will be a
-             * deadlock and the program doesnt know what to do */
+            std::cout << std::this_thread::get_id() << "took the order!\n";
             _mutex.unlock();
-            /* call the lambda function that was passed in as a parameter to
-             * addOrder() */
             order();
         } else {
-            /* this is a variable that can be modified by multiple thread at
-             * the same time so it has to be INSIDE the lock */
-            isRunning = !_isFinished;
+            std::this_thread::yield();
+            //isRunning = !_isFinished;
             _mutex.unlock();
         }
     }

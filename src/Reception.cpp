@@ -1,6 +1,5 @@
 
 #include "Reception.hpp"
-#include "Window.hpp"
 
 /*
 std::ostream &operator<<(std::ostream &out, order_t &order)

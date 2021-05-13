@@ -62,6 +62,7 @@ void print(const std::string &msg)
 
 int main(int ac, char **av)
 {
+    std::cout << "Main thread: " << std::this_thread::get_id() << std::endl;
     if (ac == 2 && strcmp(av[1], "-h") == 0)
         usage();
     if (ac != 4)

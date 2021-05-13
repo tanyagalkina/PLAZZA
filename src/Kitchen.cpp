@@ -1,6 +1,8 @@
 #include "Kitchen.hpp"
 #include "Error.hpp"
 #include <memory>
+#include <string>
+#include <thread>
 
 
 void do_join()
@@ -19,37 +21,76 @@ void do_join1()
 
 }
 
+void Kitchen::work()
+{
+    std::string buffer;
+    struct mq_attr atributes;
+    while (true) {
+        mutexOrder.lock();
+        Messenger::get_order_from_reception(this->mqfdOrders, buffer);
+
+        mq_getattr(this->mqfdOrders, &atributes);
+        if (atributes.mq_curmsgs == 0) {
+            //timer = std::chrono::high_resolution_clock::now();
+            std::this_thread::yield();
+        }
+
+        mutexOrder.unlock();
+
+        //@todo add parser here
+        int n = std::stoi(buffer);
+        std::this_thread::sleep_for(std::chrono::seconds(n));
+
+        mutexDeliv.lock();
+        Messenger::send_reply_to_reception(6, "Done!!!\n");
+        mutexDeliv.unlock();
+    }
+}
+
+void Kitchen::createCook()
+{
+    for (int i = 0; i < 2; i++) {
+        _cooks.push_back(std::shared_ptr<std::thread>(new std::thread(&Kitchen::work, this)));
+    }
+}
+
 Kitchen::Kitchen(int cooks, int ownId)
 {
     std::string buffer;
     this->_ownId = ownId;
 
-    /*try {
-        this->_pool = std::make_unique<ThreadPool>(cooks);
-    } catch (const TooManyThread &e) {
-        std::cerr << "ThreadPool could not get created. " << e.what() << std::endl;
-    }*/
     struct mq_attr atributes;
     this->initMessageQueue();
-    while (1)
-    {
+    this->createCook();
+
+    for (auto &cook : _cooks) {
+        cook->join();
+    }
+    //while (1)
+    //{
         /*mq_getattr(this->mqfdOrders, &atributes);
         if (atributes.mq_curmsgs == 0)
             std::cout << "There are no orders currently\n";
         //int rc = msgctl()*/
-        Messenger::get_order_from_reception(this->mqfdOrders, buffer);
+     //   Messenger::get_order_from_reception(this->mqfdOrders, buffer);
 
-        std::cout << "the reception has ordered:" << buffer << std::endl;
+      //  int n = std::stoi(buffer);
+
+
+        //this->_pool->joinAll();
+
+
+       // std::cout << "the reception has ordered:" << buffer << std::endl;
         //sleep(3);
-        std::thread worker(do_join);
-        std::thread worker1(do_join1);
-        worker.join();
-        worker1.join();
-        sleep(2);
+        //std::thread worker(do_join);
+        //std::thread worker1(do_join1);
+        //worker.join();
+        //worker1.join();
+        //sleep(2);
         //Messenger::send_reply_to_reception(this->mqfdDeliveries, buffer + "DONE!");
 
 
-    }
+   // }*/
 }
 
 void Kitchen::initMessageQueue()
