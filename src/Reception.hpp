@@ -9,7 +9,9 @@
 #include "Reception.hpp"
 #include "Kitchen.hpp"
 #include "Messenger.hpp"
+#include "Pizza.hpp"
 
+/*
 enum PizzaType
 {
     Regina = 1,
@@ -31,24 +33,24 @@ typedef struct {
     PizzaType _type;
     PizzaSize _size;
 } order_t;
-
+*/
 class Reception
 {
 public:
     Reception(float, int, int);
-    std::vector<order_t> parse(const std::string &str);
+    std::vector<Order> parse(const std::string &str);
     void run(); /* MAIN LOOP */
     void getInput();
 
-private:
-    PizzaType strToPizzaType(std::string str);
-    PizzaSize strToPizzaSize(std::string str);
+//private:
+//    PizzaType strToPizzaType(std::string str);
+//    PizzaSize strToPizzaSize(std::string str);
 
 private:
     float _multiply;
     int _cooks;
     int _refill;
-    std::vector<order_t> _order;
+    std::vector<Order> _order;
     int _nbKitchens;
     std::unique_ptr<Messenger> messenger;
     void addKitchen();

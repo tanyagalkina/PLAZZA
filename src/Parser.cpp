@@ -1,7 +1,187 @@
 #include "Parser.hpp"
-#include "Error.hpp"
 
 
+ParserState::ParserState(std::string text) : _text(text){}
+
+char ParserState::peek() const
+{
+    if (is_empty())
+        throw ParseError("Parser reached end of string");
+    return _text[_position];
+}
+
+void ParserState::pop()
+{
+    if (is_empty())
+        throw ParseError("Parser reached end of string");
+    _position++;
+}
+
+bool ParserState::is_empty() const
+{
+    return _position >= _text.length();
+}
+
+bool ParserState::peek_class(std::function<bool(char)> predicate) const
+{
+    if (is_empty())
+        return false;
+    return predicate(peek());
+}
+
+bool check_space(char c)
+{
+    return std::isspace(c);
+}
+
+bool check_letter(char c)
+{
+    return std::isalpha(c);
+}
+
+bool check_semicolon(char c)
+{
+    return (c == ';');
+}
+
+bool check_x(char c)
+{
+    return (c == 'x');
+}
+
+bool check_digit(char c)
+{
+    return (c >= '0' && c <= '9');
+}
+
+void ParserState::skip_space()
+{
+    while (peek_class(check_space)) {
+        pop();
+    }
+}
+
+void ParserState::consume(std::function<bool(char)> predicate)
+{
+    if (peek_class(predicate))
+        pop();
+    else
+        throw ParseError("Unexpected character");
+}
+
+void ParserState::expect(std::function<bool(char)> predicate) const
+{
+    if (!peek_class(predicate))
+        throw ParseError ("Unexpected character");
+}
+
+bool ParserState::optional(std::function<bool(char)> predicate)
+{
+    if(peek_class(predicate)) {
+        pop();
+        return true;
+    }
+    return false;
+}
+
+std::string parse_string(ParserState &state)
+{
+    state.skip_space();
+    std::string result;
+    state.expect(check_letter);
+    while (state.peek_class(check_letter)) {
+        result += state.peek();
+        state.pop();
+    }
+    return result;
+}
+
+size_t parse_integer(ParserState &state)
+{
+    state.skip_space();
+    size_t result = 0;
+    state.expect(check_digit);
+    while (state.peek_class(check_digit)) {
+        result *= 10;
+        result += state.peek() - '0';
+        state.pop();
+    }
+    return result;
+}
+
+PizzaType parse_type(ParserState &state) //can be done better with std::map so it can be more generic
+{
+    std::string str = parse_string(state);
+    if (str == "regina")
+        return PizzaType::Regina;
+    if (str == "margarita")
+        return PizzaType::Margarita;
+    if (str == "americana")
+        return PizzaType::Americana;
+    if (str == "fantasia")
+        return PizzaType::Fantasia;
+    throw ParseError("wrong Pizza Type");
+}
+
+PizzaSize parse_size(ParserState &state)
+{
+    std::string str = parse_string(state);
+    if (str == "S")
+        return PizzaSize::S;
+    if (str == "M")
+        return PizzaSize::M;
+    if (str == "L")
+        return PizzaSize::L;
+    if (str == "XL")
+        return PizzaSize::XL;
+    if (str == "XXL")
+        return PizzaSize::XXL;
+    throw ParseError("Wrong Pizza Size");
+}
+
+size_t parse_number(ParserState &state)
+{
+    state.skip_space();
+    state.consume(check_x);
+    return parse_integer(state);
+}
+
+OrderPart parse_order_part(ParserState &state)
+{
+    auto type = parse_type(state);
+    auto size = parse_size(state);
+    auto number = parse_number(state);
+    Pizza pizza = {type, size};
+    OrderPart part = {pizza, number};
+    return part;
+}
+
+Order parse_order(ParserState &state)
+{
+    Order result;
+    do {
+        auto part = parse_order_part(state);
+        result._parts.push_back(part);
+        state.skip_space();
+    } while (state.optional(check_semicolon));
+    if (!state.is_empty())
+        throw ParseError ("Extra character after order");
+    return result;
+}
+
+Order parse_order(std::string text)
+{
+    ParserState state(text);
+    return parse_order(state);
+}
+
+size_t parse_integer(std::string text)
+{
+    ParserState state(text);
+    return parse_integer(state);
+}
+
+/*
 std::vector<std::string> Parser::split(const std::string &s, const char *delim)
 {
     std::stringstream stringStream(s);
@@ -75,4 +255,4 @@ int Parser::parseStringToInt(std::string s)
         throw ParseError("string has no digit");
     int r = std::stoi(s);
     return r;
-}
+}*/

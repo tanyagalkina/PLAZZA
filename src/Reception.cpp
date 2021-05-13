@@ -1,19 +1,26 @@
 
 #include "Reception.hpp"
 
+/*
 std::ostream &operator<<(std::ostream &out, order_t &order)
 {
     out << "Size: " << order._size << " Type: " << order._type << std::endl;
     return out;
-}
+}*/
 
 void Reception::getInput()
 {
     _order.clear();
     std::string input;
     std::getline(std::cin, input);
+    _order.push_back(parse_order(input));
 
-    auto lines = Parser::parseString(input, ";");
+    auto new_order = parse_order(input);
+    for (auto order_inside : new_order._parts)
+        std::cout << "Type : " << (int)order_inside._pizza._type << " Size : " <<
+        (int)order_inside._pizza._size << " amount: "<< order_inside._amount << std::endl;
+
+    /*auto lines = Parser::parseString(input, ";");
 
     for (const auto &line : lines) {
         auto parts = Parser::parseString(line);
@@ -27,7 +34,7 @@ void Reception::getInput()
             order_t order = { strToPizzaType(parts[0]), strToPizzaSize(parts[1]) };
             _order.push_back(order);
         }
-    }
+    }*/
 }
 
 Reception::Reception(float mulitpy, int cooks, int refill)
@@ -42,7 +49,7 @@ void Reception::run()
 {
     std::string input;
     std::string buffer;
-    std::vector<order_t> orders;
+    std::vector<Order> orders;
     this->addKitchen();
     while (true) {
         try {
@@ -71,7 +78,7 @@ void Reception::addKitchen()
     }
 }
 
-
+/*
 PizzaType Reception::strToPizzaType(std::string str)
 {
     std::transform(str.begin(), str.end(), str.begin(), ::tolower);
@@ -100,4 +107,4 @@ PizzaSize Reception::strToPizzaSize(std::string str)
     if (str.compare("XXL") == 0)
         return XXL;
     throw ParseError("wrong PizzaSize");
-}
+}*/
