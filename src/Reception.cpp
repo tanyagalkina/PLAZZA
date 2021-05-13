@@ -33,23 +33,44 @@ void Reception::getInput()
 Reception::Reception(float mulitpy, int cooks, int refill)
     : _multiply(mulitpy), _cooks(cooks), _refill(refill)
 {
+    std::unique_ptr<Messenger> messenger(new Messenger());
+    this->messenger = std::move(messenger);
+    this->_nbKitchens = 0;
 }
 
 void Reception::run()
 {
     std::string input;
+    std::string buffer;
     std::vector<order_t> orders;
-
+    this->addKitchen();
     while (true) {
         try {
             getInput();
         } catch (const ParseError &e) {
             std::cerr << e.what() << std::endl;
         }
+        this->messenger->send_order_to_the_kitchen(1, "myinput");
+        sleep(3);
+        this->messenger->rcv_kitchen_reply(1, buffer);
+        std::cout << "this is what the kitchen said: " << buffer << std::endl;
     }
 
     std::cout << "running" << std::endl;
 }
+
+void Reception::addKitchen()
+{
+    pid_t pid;
+
+    this->_nbKitchens++;
+    this->messenger->create_new_pair(this->_nbKitchens);
+    pid = fork();
+    if (pid == 0) {
+        Kitchen kitchen(this->_cooks, this->_nbKitchens);
+    }
+}
+
 
 PizzaType Reception::strToPizzaType(std::string str)
 {

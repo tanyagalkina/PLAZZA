@@ -19,7 +19,7 @@ public:
     void send_order_to_the_kitchen(int kitchen_id, const std::string message);
     int rcv_kitchen_reply(int kitchen_id, std::string &buffer);
     static void send_reply_to_reception(mqd_t mqfd, const std::string message);
-    static void get_oder_form_reception(mqd_t mqfd, std::string &buffer);
+    static void get_order_from_reception(mqd_t mqfd, std::string &buffer);
 private:
     int nb_queues;
     std::vector<std::pair<int, mqd_t>> orders;

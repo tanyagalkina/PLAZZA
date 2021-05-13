@@ -5,8 +5,10 @@
 #include <vector>
 #include <algorithm>
 
-#include "Utils.hpp"
 #include "Parser.hpp"
+#include "Reception.hpp"
+#include "Kitchen.hpp"
+#include "Messenger.hpp"
 
 enum PizzaType
 {
@@ -47,6 +49,10 @@ private:
     int _cooks;
     int _refill;
     std::vector<order_t> _order;
+    int _nbKitchens;
+    std::unique_ptr<Messenger> messenger;
+    void addKitchen();
+
 };
 
 #endif //RECEPTION_HPP_
