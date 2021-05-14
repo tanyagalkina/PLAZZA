@@ -36,5 +36,6 @@ public:
 
 Order parse_order(std::string text);
 size_t parse_integer(std::string text);
+void parse_pizza(std::string text, int &order, int &timer);
 
 #endif //PARSER_HPP_
