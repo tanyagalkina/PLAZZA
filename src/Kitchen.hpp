@@ -6,17 +6,17 @@
 #include <unistd.h>
 #include "Messenger.hpp"
 
-    class Kitchen {
-    public:
+class Kitchen {
+public:
         std::unique_ptr<ThreadPool> _pool;
         int _workingThreads;
 
         void initMessageQueue();
 
-    public:
+public:
         Kitchen(int cooks, int ownId);
 
-    private:
+public:
         int _ownId;
         int _nbCooks;
         mqd_t mqfdOrders;
@@ -24,12 +24,15 @@
         std::mutex mutexOrder;
         std::mutex mutexDeliv;
         std::vector<std::shared_ptr<std::thread>> _cooks;
-        std::chrono::time_point<std::chrono::high_resolution_clock> timer;
+
+        int checkTime = 0;
+        std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
+        std::chrono::duration<float> duration;
 
         void createCook();
         void DoWork(int);
         void work();
-    };
+};
 
 
 #endif //KITCHEN_HPP_

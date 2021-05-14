@@ -10,60 +10,28 @@
 #include <deque>
 #include "Error.hpp"
 
-/* Possible usage of this ThreadPool :) */
+class Kitchen;
 
-/*
-    ThreadPool t(2);
-
-    t.addOrder(
-        [] () -> void {
-        std::cout << "1. started 2s" << std::endl;
-        std::this_thread::sleep_for(std::chrono::seconds(2));
-        std::cout << "1. ended 2s" << std::endl;
-    });
-
-    t.addOrder(
-        [] () -> void {
-        std::cout << "2. started 5s" << std::endl;
-        std::this_thread::sleep_for(std::chrono::seconds(5));
-        std::cout << "2. ended 5s" << std::endl;
-    });
-
-    t.addOrder(
-        [] () -> void {
-        std::cout << "3. started 2s" << std::endl;
-        std::this_thread::sleep_for(std::chrono::seconds(2));
-        std::cout << "3. ended 2s" << std::endl;
-    });
-
-    t.joinAll(); */
-
-/* TODO what happens if a kitchen closes does all the threads get destroyed correctly */
 class ThreadPool
 {
-public:
-    std::vector<std::shared_ptr<std::thread>> _cooks;
-    std::mutex _mutex;
-    std::deque<std::function<void ()>> _orders;
-    bool _isFinished;
-
-public:
-    explicit ThreadPool(std::size_t threads);
-
-    void addOrder(const std::function<void ()> &order);
-
-    /* this gets called after all tasks have been added */
-    void joinAll();
-
-    int cooksAvailable()
-    {
-        //@todo implement this by using the ipc
-        //return the number of available cooks
-        return 0;
-    }
 
 private:
-    /* actual function that get executed by the thread */
+    std::vector<std::shared_ptr<std::thread>> _cooks;
+    std::deque<std::function<void ()>> _orders;
+    bool _isFinished;
+    Kitchen *_kitchen;
+    std::mutex _mutex;
+    std::mutex _mutexDelivery;
+    std::mutex _mutexOrder;
+    int _workingCooks;
+
+public:
+    explicit ThreadPool(std::size_t threads, Kitchen &kitchen);
+    void joinAll();
+    int getBusyCooks();
+    int getFreeCooks();
+
+private:
     void exec();
 };
 

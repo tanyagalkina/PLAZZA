@@ -84,9 +84,9 @@ void do_loop() {
 void Reception::runWindow()
 {
     while (1) {
-        std::string input;
-        std::getline(std::cin, input);
-        std::cout << input << std::endl;
+        //std::string input;
+        //std::getline(std::cin, input);
+        //std::cout << input << std::endl;
         //_orders.push_back(parse_order(input));
         //
 
@@ -98,11 +98,14 @@ void Reception::runWindow()
         //for (alle küchen);
         //input =  Pizza.orderString;
         //int küchennumber = algo();
-        this->messenger->send_order_to_the_kitchen(1, input);
+
+        int i = 0;
+        getInput(i);
+        //this->messenger->send_order_to_the_kitchen(1, _pizza_to_do);
+        for (auto pizzas : _pizza_to_do)
+            this->messenger->send_order_to_the_kitchen(1, pizzas._pizza_to_cook);
 
     }
-
-
 }
 
 
@@ -111,24 +114,24 @@ void Reception::run() {
     std::string buffer;
     std::vector<Order> orders;
     this->addKitchen();
-    //std::thread window(&Reception::runWindow, this);
+    std::thread window(&Reception::runWindow, this);
     //std::thread window(do_loop);
     //andree thread finisch();
     int order_nb = 0;
     while (true) {
-        try {
-            getInput(order_nb);
-        } catch (const ParseError &e) {
-            exit (84);
-            std::cerr << e.what() << std::endl;
-        }
+        //try {
+            //getInput(order_nb);
+        //} catch (const ParseError &e) {
+            //std::cerr << e.what() << std::endl;
+            //exit (84);
+        //}
         /*this->messenger->send_order_to_the_kitchen(1, "FirstPizza");
         this->messenger->send_order_to_the_kitchen(1, "SecondPizza");
         this->messenger->send_order_to_the_kitchen(1, "ThirdPizza");*/
 
         //sleep(3);
         //for (alle queues);
-        //this->messenger->rcv_kitchen_reply(1, buffer);
+        this->messenger->rcv_kitchen_reply(1, buffer);
         if (buffer != "") {
             std::cout << " this is what the kitchen said: " << buffer << std::endl;
             buffer = "";
