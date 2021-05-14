@@ -24,9 +24,13 @@ struct Pizza
 {
     PizzaType _type;
     PizzaSize _size;
-    //int _order_nb;
-    //int _cooking_time;
-    //std::string _order_code;
+};
+
+struct PizzaQueue
+{
+    int _order_nb;
+    int _cooking_time;
+    std::string _pizza_to_cook;
 };
 
 /*

@@ -20,18 +20,14 @@ public:
     std::vector<Order> parse(const std::string &str);
 
     void run(); /* MAIN LOOP */
-    void getInput();
-
-//private:
-//    PizzaType strToPizzaType(std::string str);
-//    PizzaSize strToPizzaSize(std::string str);
+    void getInput(int &order_nb);
 
 private:
     float _multiply;
     int _cooks;
     int _refill;
     //std::vector<KMetaData> _kitchen_mds;
-    //std::vector<Pizza> _pizza_todo;
+    std::vector<PizzaQueue> _pizza_to_do;
     std::vector<Order> _orders;
     int _nbKitchens;
     std::unique_ptr<Messenger> messenger;

@@ -8,19 +8,43 @@ std::ostream &operator<<(std::ostream &out, order_t &order)
     return out;
 }*/
 
-
-void Reception::getInput()
+int cooking_time(int pizza_type)
 {
-    _orders.clear();
+    if (pizza_type == 1)
+        return 1;
+    else if (pizza_type == 8)
+        return 4;
+    else
+        return 2;
+}
+
+void Reception::getInput(int &order_nb)
+{
+    order_nb++;
+    //_orders.clear();
     std::string input;
     std::getline(std::cin, input);
-    _orders.push_back(parse_order(input));
+    Order order;
+    order = parse_order(input);
+    _orders.push_back(order);
+    //_pizza_to_do.push_back();
+    PizzaQueue pizza_to_send;
 
-    auto new_order = parse_order(input);
-    for (auto order_inside : new_order._parts) {
+    for (auto order_inside : order._parts) {
+        int i = order_inside._amount;
         //order_inside._pizza._cooking_time = order_inside._pizza._type / 2;
+        while (i != 0) {
+            pizza_to_send._cooking_time = cooking_time((int) order_inside._pizza._type);
+            pizza_to_send._order_nb = order_nb;
+            pizza_to_send._pizza_to_cook = std::to_string(pizza_to_send._order_nb) + " " + std::to_string(pizza_to_send._cooking_time);
+            _pizza_to_do.push_back(pizza_to_send);
+            i--;
+        }
         std::cout << "Type : " << (int) order_inside._pizza._type << " Size : " <<
                     (int) order_inside._pizza._size << " amount: " << order_inside._amount << std::endl;
+    }
+    for (auto pizzas : _pizza_to_do) {
+        std::cout << pizzas._pizza_to_cook << std::endl;
     }
 
     /*auto lines = Parser::parseString(input, ";");
@@ -87,22 +111,24 @@ void Reception::run() {
     std::string buffer;
     std::vector<Order> orders;
     this->addKitchen();
-    std::thread window(&Reception::runWindow, this);
+    //std::thread window(&Reception::runWindow, this);
     //std::thread window(do_loop);
     //andree thread finisch();
+    int order_nb = 0;
     while (true) {
-        /*try {
-            getInput();
+        try {
+            getInput(order_nb);
         } catch (const ParseError &e) {
+            exit (84);
             std::cerr << e.what() << std::endl;
-        }*/
+        }
         /*this->messenger->send_order_to_the_kitchen(1, "FirstPizza");
         this->messenger->send_order_to_the_kitchen(1, "SecondPizza");
         this->messenger->send_order_to_the_kitchen(1, "ThirdPizza");*/
 
         //sleep(3);
         //for (alle queues);
-        this->messenger->rcv_kitchen_reply(1, buffer);
+        //this->messenger->rcv_kitchen_reply(1, buffer);
         if (buffer != "") {
             std::cout << " this is what the kitchen said: " << buffer << std::endl;
             buffer = "";
