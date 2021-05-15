@@ -6,19 +6,6 @@
 #include <string>
 #include <thread>
 
-Products getProductsFromPizzaType(int type)
-{
-    switch (static_cast<PizzaType>(type)) {
-        case PizzaType::Margarita:
-            return Products(1, 1, 1, 0, 0, 0, 0, 0);
-        case PizzaType::Regina:
-            return Products(1, 1, 1, 1, 1, 0, 0, 0);
-        case PizzaType::Americana:
-            return Products(1, 1, 1, 0, 0, 1, 0, 0);
-        case PizzaType::Fantasia:
-            return Products(1, 1, 0, 0, 0, 0, 1, 1);
-    };
-}
 
 void Kitchen::supplyKitchen()
 {
