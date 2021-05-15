@@ -33,18 +33,4 @@ struct PizzaQueue
     std::string _pizza_to_cook;
 };
 
-/*
-struct Ingredient
-{
-    int _something = 5;
-};
-
-struct KMetaData
-{
-    int busy_cooks;
-    Ingredient _ingredient;
-    int _ownId;
-};*/
-
-
 #endif //PIZZA_HPP_

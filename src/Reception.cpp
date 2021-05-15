@@ -69,45 +69,45 @@ Reception::Reception(float mulitpy, int cooks, int refill) : _multiply(mulitpy),
     std::unique_ptr<Messenger> messenger(new Messenger());
     this->messenger = std::move(messenger);
     this->_nbKitchens = 0;
-}
-
-void do_loop() {
-    while (1) {
-        std::string input;
-        std::getline(std::cin, input);
-        std::cout << input << std::endl;
-
-    }
-    std::cin.get();
+    this->uniqueKitchenId = 1;
 }
 
 void Reception::runWindow()
 {
+    int i = 0;
+    int kitchenId = 0;
+
     while (1) {
-        //std::string input;
-        //std::getline(std::cin, input);
-        //std::cout << input << std::endl;
-        //_orders.push_back(parse_order(input));
-        //
-
-        //
-        //order nb 3 has 7 pizza
-        //pizza to do is =  add order(orders last , pizza to do)
-        //
-        // if input == status:
-        //for (alle küchen);
-        //input =  Pizza.orderString;
-        //int küchennumber = algo();
-
-        int i = 0;
         getInput(i);
-        //this->messenger->send_order_to_the_kitchen(1, _pizza_to_do);
-        for (auto pizzas : _pizza_to_do)
-            this->messenger->send_order_to_the_kitchen(1, pizzas._pizza_to_cook);
+        for (auto pizzas : _pizza_to_do) {
+
+            kitchenId = getAvailableKitchen();
+            if (kitchenId == 0) {
+                MDMutex.lock();
+                MessageMutex.lock();
+                addKitchen();
+                MDMutex.unlock();
+                MessageMutex.unlock();
+                this->messenger->send_order_to_the_kitchen(uniqueKitchenId, pizzas._pizza_to_cook);
+                MDMutex.lock();
+                //update kitchenMetaData vector (uniqueKitchenId)
+                MDMutex.unlock();
+            }
+            else
+                this->messenger->send_order_to_the_kitchen(kitchenId, pizzas._pizza_to_cook);
+            MDMutex.lock();
+            //_kitchen_mds. update(KitchenId)
+            MDMutex.unlock();
+        }
 
     }
 }
 
+///returns 0 if all the kitchens are busy_max;
+int Reception::getAvailableKitchen()
+{
+    return 1;
+}
 
 void Reception::run() {
     std::string input;
@@ -118,7 +118,21 @@ void Reception::run() {
     //std::thread window(do_loop);
     //andree thread finisch();
     int order_nb = 0;
+    struct mq_attr attr;
     while (true) {
+        for (auto meta: _kitchen_mds) {
+            mq_getattr(meta.deliveryQueue, &attr);
+            if (attr.mq_curmsgs != 0) {
+                this->messenger->rcv_kitchen_reply(meta._ownId, buffer);
+                if (buffer != "") {
+                    std::cout << " this is what the kitchen said: " << buffer << std::endl;
+                    //if the message is "orderNumber" -> update_orders
+                    //if the nessage is "Goodbye!" -> remove from MetaData
+                    //
+                    buffer = "";
+                }
+            }
+        }
         //try {
             //getInput(order_nb);
         //} catch (const ParseError &e) {
@@ -131,26 +145,39 @@ void Reception::run() {
 
         //sleep(3);
         //for (alle queues);
-        this->messenger->rcv_kitchen_reply(1, buffer);
-        if (buffer != "") {
-            std::cout << " this is what the kitchen said: " << buffer << std::endl;
-            buffer = "";
+        //this->messenger->rcv_kitchen_reply(1, buffer);
+        //if (buffer != "") {
+        //    std::cout << " this is what the kitchen said: " << buffer << std::endl;
+        //    buffer = "";
         }
+        //if (buffer == "Goodbye!")
+
+            //removeFromMd()
     //window.join();
-    }
+    //}
 
     std::cout << "running" << std::endl;
 }
 
 void Reception::addKitchen() {
+    this->uniqueKitchenId++;
+
     pid_t pid;
 
     this->_nbKitchens++;
-    this->messenger->create_new_pair(this->_nbKitchens);
+    this->messenger->create_new_pair(this->uniqueKitchenId);
     pid = fork();
     if (pid == 0) {
-        Kitchen kitchen(this->_cooks, this->_nbKitchens);
+        Kitchen kitchen(this->_cooks, this->uniqueKitchenId);
     }
+
+    KMetaData metaData;
+    metaData._ownId = uniqueKitchenId;
+    metaData.busy_cooks = 0;
+    metaData.currOrders = 0;
+    metaData.orders_max = this->_cooks * 2;
+
+    _kitchen_mds.push_back(metaData);
 }
 
 /*

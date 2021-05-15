@@ -6,15 +6,36 @@
 #include <string>
 #include <thread>
 
+void Kitchen::supplyKitchen()
+{
+    while (true)
+    {
+        storage.increment();
+        sleep(5);
+    }
+}
+
+std::thread Kitchen::signSupplyContract()
+{
+    std::thread supply(&Kitchen::supplyKitchen, this);
+    return supply;
+}
+
+
 Kitchen::Kitchen(int cooks, int ownId)
 {
     std::string buffer;
     this->_ownId = ownId;
 
     this->initMessageQueue();
+    supply = this->signSupplyContract();
 
     this->_pool = std::make_unique<ThreadPool>(cooks, *this);
     this->_pool->joinAll();
+    supply.detach();
+    Messenger::send_reply_to_reception(mqfdDeliveries, "Goodbye!");
+    exit (0);
+
 }
 
 void Kitchen::initMessageQueue()
@@ -36,5 +57,3 @@ void Kitchen::initMessageQueue()
         std::cerr << "Cannot open message queue\n";
     }
 }
-
-
