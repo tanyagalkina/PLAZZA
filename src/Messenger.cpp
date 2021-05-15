@@ -103,7 +103,7 @@ void Messenger::get_order_from_reception(mqd_t mqfd, std::string &buffer)
 
     //std::cout << "to get the order form reception we use is: " << mqfd << std::endl;
     ret = mq_receive(mqfd, buff, 20, 0);
-    if (ret == -1) {
+    if (ret == -1 && errno != EAGAIN) {
         std::cerr << "Cannot receive message." << std::endl;
         //throw MessageQueueException("Receiving message failed in message queue", "Messenger");
     }

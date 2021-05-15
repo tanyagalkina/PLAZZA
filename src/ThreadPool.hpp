@@ -4,6 +4,7 @@
 #include <bits/c++config.h>
 #include <memory>
 #include <iostream>
+#include <mqueue.h>
 #include <vector>
 #include <thread>
 #include <future>
@@ -24,6 +25,9 @@ private:
     std::mutex _mutexDelivery;
     std::mutex _mutexOrder;
     int _workingCooks;
+    std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
+    std::chrono::duration<float> duration;
+    bool _timeIsCounting = false;
 
 public:
     explicit ThreadPool(std::size_t threads, Kitchen &kitchen);
@@ -33,6 +37,9 @@ public:
 
 private:
     void exec();
+    int checkKitchenTime();
+    int getOrder(std::string &buffer, struct mq_attr &attr);
+    void processPizza(std::string &buffer);
 };
 
 #endif //THREADPOOL_HPP_
