@@ -1,5 +1,6 @@
 
 #include "Reception.hpp"
+#include "Error.hpp"
 
 /*
 std::ostream &operator<<(std::ostream &out, order_t &order)
@@ -78,7 +79,12 @@ void Reception::runWindow()
     int kitchenId = 0;
 
     while (1) {
-        getInput(i);
+        try {
+            getInput(i);
+        } catch (const ParseError &e) {
+            std::cerr << "Bad input: " << e.what() << std::endl;
+            continue;
+        }
         for (auto pizzas : _pizza_to_do) {
 
             kitchenId = getAvailableKitchen();
