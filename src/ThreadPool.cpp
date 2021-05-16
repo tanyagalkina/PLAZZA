@@ -2,6 +2,7 @@
 #include "Error.hpp"
 #include "Parser.hpp"
 #include "Kitchen.hpp"
+#include "Products.hpp"
 #include <bits/types/__FILE.h>
 #include <ctime>
 #include <ios>
@@ -65,7 +66,6 @@ int ThreadPool::checkKitchenTime()
         end = std::chrono::high_resolution_clock::now();
         duration = end - start;
         if (duration.count() > 30) {
-            //@todo send message to the reception that this kitchen should close now
             std::cout << "5 seconds are over now" << std::endl;
             return 1;
         }
@@ -100,6 +100,10 @@ void ThreadPool::processPizza(std::string &buffer)
     } catch (const ParseError &e) {
         std::cerr << __FILE__ << ": " << e.what() << std::endl;
     }
+
+    const auto &needed = getProductsFromPizzaType(pizzaType);
+
+    while (_kitchen->storage.hasEnoughFor(needed));
 
     std::this_thread::sleep_for(std::chrono::seconds(timeToCook));
 }
