@@ -43,6 +43,7 @@ ThreadPool::ThreadPool(std::size_t threads, Kitchen &kitchen)
         _cooks.push_back(std::shared_ptr<std::thread>(new std::thread(&ThreadPool::exec, this))); }
 
     std::thread checkTimeThread(&ThreadPool::checkTime, this);
+    std::cout << "i have created " << _cooks.size() << std::endl;
     _workingCooks = 0;
     checkTimeThread.join();
 }
