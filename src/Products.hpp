@@ -12,6 +12,7 @@ public:
     void increment();
     Products &operator-=(const Products &other);
     bool hasEnoughFor(const Products &other);
+    void dump();
 
 private:
     int doe;

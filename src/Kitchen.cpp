@@ -37,7 +37,7 @@ Kitchen::Kitchen(int cooks, int ownId, int refill, int multiply)
     this->_pool->joinAll();
     supply.detach();
     Messenger::send_reply_to_reception(mqfdDeliveries, "0");
-    std::cout << "We are closing\n";
+    std::cout << "We are closing" << std::endl;
     exit (0);
 
 }

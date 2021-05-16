@@ -24,6 +24,19 @@ Products::Products()
     : doe(5), tomato(5), gruyere(5), ham(5), mushrooms(5), steak(5), eggplant(5), goat_cheese(5)
 {
 }
+
+void Products::dump()
+{
+    std::cout <<    " - Doe: " << this->doe << "\n"
+                    " - Tomato: " << this->tomato << "\n"
+                    " - Gruyere: " << this->gruyere << "\n"
+                    " - Ham: " << this->ham << "\n"
+                    " - Mushrooms: " << this->mushrooms << "\n"
+                    " - Steak: " << this->steak << "\n"
+                    " - Eggplant: " << this->eggplant << "\n"
+                    " - Goat cheese: " << this->goat_cheese << std::endl;
+}
+
 void Products::increment()
 {
     this->doe += 1;
