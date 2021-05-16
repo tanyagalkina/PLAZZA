@@ -131,6 +131,7 @@ void Reception::parse_this_buffer(std::string buffer, int meta_own_id)
                 _orders[i].pizza_finished++;
                 if (_orders[i].pizza_finished == _orders[i].nb_of_pizzas) {
                     std::cout << "This order is done: " << _orders[i].input << std::endl;
+                    _orders.erase(_orders.begin() + i);
                     // remove this order; << to do
                     //std::remove_if(_orders.begin(), _orders.end(), order);
                 }
