@@ -52,6 +52,7 @@ private:
     int getAvailableKitchen();
     void removeFromMetaData(int);
     void updateOrders(std::string);
+    void parse_this_buffer(std::string buffer, int meta_own_id);
 
 };
 

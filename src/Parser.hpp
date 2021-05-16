@@ -16,6 +16,10 @@ struct OrderPart
 struct Order
 {
     std::vector<OrderPart> _parts;
+    std::string input;
+    int nb_of_pizzas;
+    int pizza_finished;
+    int order_nb;
 };
 
 class ParserState
@@ -36,6 +40,6 @@ public:
 
 Order parse_order(std::string text);
 size_t parse_integer(std::string text);
-void parse_pizza(std::string text, int &order, int &timer);
+void parse_pizza(std::string text, int &order, int &timer, int &type);
 
 #endif //PARSER_HPP_

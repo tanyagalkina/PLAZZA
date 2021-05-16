@@ -181,12 +181,14 @@ size_t parse_integer(std::string text)
     return parse_integer(state);
 }
 
-void parse_pizza(std::string text, int &order, int &timer)
+void parse_pizza(std::string text, int &order, int &timer, int &type)
 {
     ParserState state(text);
     order = parse_integer(state);
     state.skip_space();
     timer = parse_integer(state);
+    state.skip_space();
+    type = parse_integer(state);
 }
 /*
 std::vector<std::string> Parser::split(const std::string &s, const char *delim)

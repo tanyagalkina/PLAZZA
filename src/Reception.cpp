@@ -19,6 +19,7 @@ int cooking_time(int pizza_type)
         return 2;
 }
 
+
 void Reception::getInput(int &order_nb)
 {
     order_nb++;
@@ -27,42 +28,29 @@ void Reception::getInput(int &order_nb)
     std::getline(std::cin, input);
     Order order;
     order = parse_order(input);
-    _orders.push_back(order);
-    //_pizza_to_do.push_back();
+    order.input = input;
+    order.nb_of_pizzas = 0;
     PizzaQueue pizza_to_send;
-
     for (auto order_inside : order._parts) {
         int i = order_inside._amount;
-        //order_inside._pizza._cooking_time = order_inside._pizza._type / 2;
+        order.nb_of_pizzas += i;
         while (i != 0) {
             pizza_to_send._cooking_time = cooking_time((int) order_inside._pizza._type);
             pizza_to_send._order_nb = order_nb;
-            pizza_to_send._pizza_to_cook = std::to_string(pizza_to_send._order_nb) + " " + std::to_string(pizza_to_send._cooking_time);
+            pizza_to_send._pizza_to_cook = std::to_string(pizza_to_send._order_nb) + " " + std::to_string(pizza_to_send._cooking_time) + " " + std::to_string((int) order_inside._pizza._type);
             _pizza_to_do.push_back(pizza_to_send);
             i--;
         }
         std::cout << "Type : " << (int) order_inside._pizza._type << " Size : " <<
                     (int) order_inside._pizza._size << " amount: " << order_inside._amount << std::endl;
     }
+    order.order_nb = order_nb;
+    order.pizza_finished = 0;
+    _orders.push_back(order);
+
     for (auto pizzas : _pizza_to_do) {
         std::cout << pizzas._pizza_to_cook << std::endl;
     }
-
-    /*auto lines = Parser::parseString(input, ";");
-
-    for (const auto &line : lines) {
-        auto parts = Parser::parseString(line);
-        //@todo check for STATUS as a vaild input
-        if (parts.size() != 3 || parts[2][0] != 'x')
-            throw ParseError("bad input");
-        int howMany = Parser::parseStringToInt(parts[2]);
-        if (howMany > 99 || howMany < 1)
-            throw ParseError("bad number");
-        while (howMany--) {
-            order_t order = { strToPizzaType(parts[0]), strToPizzaSize(parts[1]) };
-            _order.push_back(order);
-        }
-    }*/
 }
 
 Reception::Reception(float mulitpy, int cooks, int refill) : _multiply(mulitpy), _cooks(cooks), _refill(refill)
@@ -81,10 +69,12 @@ void Reception::runWindow()
     while (1) {
         try {
             getInput(i);
+            for (auto order: _orders)
+                std::cout << "nb of pizza in this order : " << order.order_nb << std::endl;
         } catch (const ParseError &e) {
             std::cerr << "Bad input: " << e.what() << std::endl;
             continue;
-        }
+        }/*
         for (auto pizzas : _pizza_to_do) {
 
             kitchenId = getAvailableKitchen();
@@ -105,7 +95,7 @@ void Reception::runWindow()
             //_kitchen_mds. update(KitchenId)
             MDMutex.unlock();
         }
-
+*/
     }
 }
 
@@ -115,6 +105,31 @@ int Reception::getAvailableKitchen()
     return 1;
 }
 
+void Reception::parse_this_buffer(std::string buffer, int meta_own_id)
+{
+    int value = parse_integer(buffer);
+    if (value == 0) {
+        //remove from metadata shit;
+        for (int i = 0; i < _kitchen_mds.size(); i++) {
+            if (_kitchen_mds[i]._ownId == meta_own_id) {
+                std::cout << "Kitchen nb " << _kitchen_mds[i]._ownId << " closed" << std::endl;
+                _kitchen_mds.erase(_kitchen_mds.begin() + i);
+            }
+        }
+    }
+    else {
+        for (int i = 0; i < _orders.size(); i++) {
+            if (value == _orders[i].order_nb) {
+                _orders[i].pizza_finished++;
+                if (_orders[i].pizza_finished == _orders[i].nb_of_pizzas) {
+                    std::cout << "This order is done: " << _orders[i].input << std::endl;
+                    // remove this order; << to do
+                    //std::remove_if(_orders.begin(), _orders.end(), order);
+                }
+            }
+        }
+    }
+}
 void Reception::run() {
     std::string input;
     std::string buffer;
@@ -132,7 +147,9 @@ void Reception::run() {
                 this->messenger->rcv_kitchen_reply(meta._ownId, buffer);
                 if (buffer != "") {
                     std::cout << " this is what the kitchen said: " << buffer << std::endl;
+                    parse_this_buffer(buffer, meta._ownId);
                     //if the message is "orderNumber" -> update_orders
+
                     //if the nessage is "Goodbye!" -> remove from MetaData
                     //
                     buffer = "";
@@ -185,34 +202,3 @@ void Reception::addKitchen() {
 
     _kitchen_mds.push_back(metaData);
 }
-
-/*
-PizzaType Reception::strToPizzaType(std::string str)
-{
-    std::transform(str.begin(), str.end(), str.begin(), ::tolower);
-
-    if (str.compare("regina") == 0)
-        return Regina;
-    if (str.compare("margarita") == 0)
-        return Margarita;
-    if (str.compare("americana") == 0)
-        return Americana;
-    if (str.compare("fantasia") == 0)
-        return Fantasia;
-    throw ParseError("wrong pizza type");
-}
-
-PizzaSize Reception::strToPizzaSize(std::string str)
-{
-    if (str.compare("S") == 0)
-        return S;
-    if (str.compare("M") == 0)
-        return M;
-    if (str.compare("L") == 0)
-        return L;
-    if (str.compare("XL") == 0)
-        return XL;
-    if (str.compare("XXL") == 0)
-        return XXL;
-    throw ParseError("wrong PizzaSize");
-}*/

@@ -93,9 +93,10 @@ void ThreadPool::processPizza(std::string &buffer)
 {
     int orderID;
     int timeToCook;
+    int pizzaType;
 
     try {
-        parse_pizza(buffer, orderID, timeToCook);
+        parse_pizza(buffer, orderID, timeToCook, pizzaType);
     } catch (const ParseError &e) {
         std::cerr << __FILE__ << ": " << e.what() << std::endl;
     }
