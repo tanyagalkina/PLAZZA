@@ -27,7 +27,8 @@ void Messenger::create_new_pair(int kitchen_id)
 {
     mqd_t mqfd;
     struct mq_attr attr;
-    std::string name("/stub" + std::to_string(this->nb_queues * 100) + "order");
+    std::string name("/stub" + std::to_string(kitchen_id * 100) + "order");
+
 
     attr.mq_maxmsg = 10;
     attr.mq_msgsize = 20;
@@ -40,7 +41,7 @@ void Messenger::create_new_pair(int kitchen_id)
     std::pair<int, mqd_t> new_order {kitchen_id, mqfd};
     this->orders.push_back(new_order);
     name.clear();
-    name = "/stub" + std::to_string(this->nb_queues * 100) + "delivery";
+    name = "/stub" + std::to_string(kitchen_id * 100) + "delivery";
     //std::cout << "the name of delivery added is:" << name << std::endl;
     mq_unlink(name.c_str());
     mqfd = mq_open(name.c_str(), O_RDWR | O_CREAT | O_NONBLOCK, (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH), &attr);
