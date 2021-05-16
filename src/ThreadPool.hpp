@@ -28,6 +28,7 @@ private:
     std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
     std::chrono::duration<float> duration;
     bool _timeIsCounting = false;
+    bool _allQuit = false;
 
 public:
     explicit ThreadPool(std::size_t threads, Kitchen &kitchen);
@@ -40,6 +41,7 @@ private:
     int checkKitchenTime();
     int getOrder(std::string &buffer, struct mq_attr &attr);
     void processPizza(std::string &buffer);
+    void checkTime();
 };
 
 #endif //THREADPOOL_HPP_

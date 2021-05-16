@@ -9,6 +9,30 @@
 #include <mqueue.h>
 #include <thread>
 
+void ThreadPool::checkTime()
+{
+    while (true) {
+        if (_workingCooks == 0 && !_timeIsCounting) {
+            start = std::chrono::high_resolution_clock::now();
+            _timeIsCounting = true;
+        }
+
+        if (_workingCooks != 0) {
+            _timeIsCounting = false;
+        }
+
+        if (_timeIsCounting) {
+            end = std::chrono::high_resolution_clock::now();
+            duration = end - start;
+            if (duration.count() > 5) {
+                std::cout << "5 seconds are over now" << std::endl;
+                break;
+            }
+        }
+    }
+    _allQuit = true;
+}
+
 ThreadPool::ThreadPool(std::size_t threads, Kitchen &kitchen)
 {
     this->_kitchen = &kitchen;
@@ -18,7 +42,9 @@ ThreadPool::ThreadPool(std::size_t threads, Kitchen &kitchen)
     for (std::size_t i = 0; i < threads; i++) {
         _cooks.push_back(std::shared_ptr<std::thread>(new std::thread(&ThreadPool::exec, this))); }
 
+    std::thread checkTimeThread(&ThreadPool::checkTime, this);
     _workingCooks = 0;
+    checkTimeThread.join();
 }
 
 int ThreadPool::getBusyCooks()
@@ -107,10 +133,16 @@ void ThreadPool::exec()
 
     while (true) {
         this->_mutex.lock();
-        if (checkKitchenTime() != 0) {
+        if (_allQuit) {
             this->_mutex.unlock();
             break;
         }
+
+        //this->_mutex.lock();
+        //if (checkKitchenTime() != 0) {
+            //this->_mutex.unlock();
+            //break;
+        //}
 
         this->_mutex.unlock();
 

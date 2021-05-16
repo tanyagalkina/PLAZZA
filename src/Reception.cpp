@@ -77,11 +77,12 @@ void Reception::runWindow()
 
         }
 
-        while (_pizza_to_do.size() != 0) {
+        while (_pizza_to_do.size() >= 0) {
             std::string currOrder = this->_pizza_to_do.front()._pizza_to_cook;
             _pizza_to_do.erase(_pizza_to_do.begin());
 
             kitchenId = getAvailableKitchen();
+            std::cout << "kitchenID: " << kitchenId << std::endl;
             if (kitchenId == 0) {
                 //std::cout << "there"
                 MDMutex.lock();
@@ -120,12 +121,16 @@ int Reception::getAvailableKitchen()
     for (auto entry : _kitchen_mds)
         std::cout << "available kitchens: "<< entry._ownId << std::endl;
 
+    for (auto entry : _kitchen_mds)
+        std::cout << "BEFORE: "<< entry.currOrders << std::endl;
+
     std::sort(_kitchen_mds.begin(), _kitchen_mds.end(), [](const auto &a, const auto &b) { return a.currOrders < b.currOrders; });
 
     //_kitchen_mds.sort()
     for (auto entry : _kitchen_mds)
-        std::cout << "available kitchens: "<< entry.currOrders << std::endl;
+        std::cout << "AFTER: "<< entry.currOrders << std::endl;
 
+    printf("cur = %d -- max = %d\n",_kitchen_mds[0].currOrders, _kitchen_mds[0].orders_max);
     if (_kitchen_mds[0].currOrders == _kitchen_mds[0].orders_max)
         return 0;
     return _kitchen_mds[0]._ownId;
@@ -210,7 +215,6 @@ void Reception::run() {
 }
 
 void Reception::addKitchen() {
-    this->uniqueKitchenId++;
 
     pid_t pid;
 
@@ -227,5 +231,6 @@ void Reception::addKitchen() {
     metaData.currOrders = 0;
     metaData.orders_max = this->_cooks * 2;
 
+    this->uniqueKitchenId++;
     _kitchen_mds.push_back(metaData);
 }
