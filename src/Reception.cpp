@@ -178,9 +178,9 @@ void Reception::parse_this_buffer(std::string buffer, int meta_own_id)
         for (int i = 0; i < _kitchen_mds.size(); i++) {
             if (_kitchen_mds[i]._ownId == meta_own_id) {
                 _kitchen_mds[i].currOrders--;
-                if (_kitchen_mds[i].currOrders == 0) {
-                    _kitchen_mds[i].closing = mq_closing(meta_own_id);
-                }
+                //if (_kitchen_mds[i].currOrders == 0) {
+                //    _kitchen_mds[i].closing = mq_closing(meta_own_id);
+                //}
             }
         }
         for (int i = 0; i < _orders.size(); i++) {
