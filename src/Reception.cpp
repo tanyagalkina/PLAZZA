@@ -91,16 +91,24 @@ void Reception::runWindow()
                 std::cout << "the uniqueId is " << uniqueKitchenId << std::endl;
                 this->messenger->send_order_to_the_kitchen(uniqueKitchenId, currOrder);
                 MDMutex.lock();
-                //update kitchenMetaData vector (uniqueKitchenId)
+                updateKitchenBusy(uniqueKitchenId);
                 MDMutex.unlock();
             }
             else
                 this->messenger->send_order_to_the_kitchen(kitchenId, currOrder);
             MDMutex.lock();
-            //_kitchen_mds. update(KitchenId)
+            updateKitchenBusy(kitchenId);
             MDMutex.unlock();
 
+    }
+}
 
+void Reception::updateKitchenBusy(int ownId)
+{
+    for (int i = 0; i < _kitchen_mds.size(); ++i)
+    {
+        if (ownId == _kitchen_mds[i]._ownId)
+            _kitchen_mds[i].currOrders++;
     }
 }
 
@@ -110,7 +118,15 @@ int Reception::getAvailableKitchen()
     for (auto entry : _kitchen_mds)
         std::cout << "available kitchens: "<< entry._ownId << std::endl;
 
-    return 0;
+    std::sort(_kitchen_mds.begin(), _kitchen_mds.end(), [](const auto &a, const auto &b) { return a.currOrders < b.currOrders; });
+
+    //_kitchen_mds.sort()
+    for (auto entry : _kitchen_mds)
+        std::cout << "available kitchens: "<< entry.currOrders << std::endl;
+
+    if (_kitchen_mds[0].currOrders == _kitchen_mds[0].orders_max)
+        return 0;
+    return _kitchen_mds[0]._ownId;
 }
 
 void Reception::parse_this_buffer(std::string buffer, int meta_own_id)

@@ -64,7 +64,7 @@ int ThreadPool::checkKitchenTime()
     if (_timeIsCounting) {
         end = std::chrono::high_resolution_clock::now();
         duration = end - start;
-        if (duration.count() > 5) {
+        if (duration.count() > 30) {
             //@todo send message to the reception that this kitchen should close now
             std::cout << "5 seconds are over now" << std::endl;
             return 1;
@@ -126,7 +126,8 @@ void ThreadPool::exec()
         processPizza(buffer);
 
         this->_mutexDelivery.lock();
-        Messenger::send_reply_to_reception(6, "Done!!!\n");
+        std::cout << std::this_thread::get_id() << std::endl;
+        Messenger::send_reply_to_reception(6, "3\n");
         _workingCooks--;
         this->_mutexDelivery.unlock();
     }

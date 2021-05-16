@@ -12,7 +12,7 @@ void Kitchen::supplyKitchen()
     while (true)
     {
         storage.increment();
-        sleep(this->_refill);
+        std::this_thread::sleep_for(std::chrono::milliseconds(_refill));
     }
 }
 
@@ -35,7 +35,7 @@ Kitchen::Kitchen(int cooks, int ownId, int refill)
     this->_pool = std::make_unique<ThreadPool>(cooks, *this);
     this->_pool->joinAll();
     supply.detach();
-    Messenger::send_reply_to_reception(mqfdDeliveries, "Goodbye!");
+    Messenger::send_reply_to_reception(mqfdDeliveries, "0");
     exit (0);
 
 }
