@@ -26,7 +26,7 @@ void Reception::getInput(int &order_nb)
     //_orders.clear();
     std::string input;
     std::getline(std::cin, input);
-    /*if (input == "status") {
+    if (input == "status") {
         if (_kitchen_mds.size() != 0) {
             std::cout << _kitchen_mds.size() << std::endl;
             for (auto kitchen: _kitchen_mds) {
@@ -38,7 +38,7 @@ void Reception::getInput(int &order_nb)
         }
         std::cout << "Currently no kitchen is available, please order something" << std::endl;
         return;
-    }*/
+    }
     Order order;
     order = parse_order(input);
     order.input = input;
