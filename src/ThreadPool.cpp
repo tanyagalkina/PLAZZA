@@ -30,7 +30,9 @@ void ThreadPool::checkTime()
             }
         }
     }
+    _mutex.lock();
     _allQuit = true;
+    _mutex.unlock();
 }
 
 ThreadPool::ThreadPool(std::size_t threads, Kitchen &kitchen)
@@ -73,7 +75,6 @@ int ThreadPool::getOrder(std::string &buffer, struct mq_attr &attr)
 {
     Messenger::get_order_from_reception(_kitchen->mqfdOrders, buffer);
     if (buffer.empty()) {
-        this->_mutexOrder.unlock();
         return 1;
     }
 

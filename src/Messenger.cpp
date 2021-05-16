@@ -37,7 +37,6 @@ void Messenger::create_new_pair(int kitchen_id)
     mqfd = mq_open(name.c_str(), O_RDWR | O_CREAT, (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH), &attr);
     if (mqfd == -1) {
         std::cerr << "Cannot open message queue.";
-        //throw OpenQueueException("Cannot open message queue.");
     }
     std::pair<int, mqd_t> new_order {kitchen_id, mqfd};
     this->orders.push_back(new_order);
@@ -48,7 +47,6 @@ void Messenger::create_new_pair(int kitchen_id)
     mqfd = mq_open(name.c_str(), O_RDWR | O_CREAT | O_NONBLOCK, (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH), &attr);
     if (mqfd == -1) {
         std::cerr << "Cannot open message queue.\n";
-        //throw OpenQueueException("Cannot open message queue.");
     }
     std::pair<int, mqd_t> new_delivery {kitchen_id, mqfd};
     this->deliveries.push_back(new_delivery);
@@ -64,7 +62,6 @@ void Messenger::send_order_to_the_kitchen(int kitchen_id, const std::string mess
     ret = mq_send(this->orders[queue_ind].second, message.c_str(), message.length() + 1, 0);
     if (ret == -1) {
         std::cerr << "Cannot send the message to the kitchen.";
-        //throw MessageQueueException("Sending message failed in message queue.", "Messenger");
     }
 }
 
@@ -79,7 +76,6 @@ int Messenger::rcv_kitchen_reply(int kitchen_id, std::string &buffer)
     ret = mq_receive(this->deliveries[queue_index].second, buff, 20, 0);
     if (ret == -1 && errno != EAGAIN) {
         std::cerr << "Cannot receive message.\n";
-        //throw MessageQueueException("Cannot receive message");
     }
     if (ret > 0)
         buffer.assign(buff);
@@ -94,7 +90,6 @@ void Messenger::send_reply_to_reception(mqd_t mqfd, const std::string message)
     ret = mq_send(mqfd, message.c_str(), message.length() + 1, 0);
     if (ret == -1) {
         std::cerr << "Cannot send the message from the kitchen." << std::endl;
-        //throw MessageQueueException("Sending message failed in message queue.", "Messenger");
     }
 }
 
@@ -107,10 +102,12 @@ void Messenger::get_order_from_reception(mqd_t mqfd, std::string &buffer)
     ret = mq_receive(mqfd, buff, 20, 0);
     if (ret == -1 && errno != EAGAIN) {
         std::cerr << "Cannot receive message from reception." << std::endl;
-        //throw MessageQueueException("Receiving message failed in message queue", "Messenger");
     }
+    //printf("ret = %d\n", ret);
     if (ret > 0)
         buffer.assign(buff);
+    else
+        buffer.clear();
 }
 
 int Messenger::get_queue_index(int kitchen_id, int mode)
@@ -127,5 +124,5 @@ int Messenger::get_queue_index(int kitchen_id, int mode)
         }
     }
     std::cerr << "The requested queue does not exist." << std::endl;
-    //throw InvalidQueueException("A non-existing queue was requested", "Messenger");
+    return -1;
 }

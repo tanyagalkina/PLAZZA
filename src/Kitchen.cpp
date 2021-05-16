@@ -50,7 +50,7 @@ void Kitchen::initMessageQueue()
 
     attr.mq_maxmsg = 10;
     attr.mq_msgsize = 20;
-    this->mqfdOrders = mq_open(name.c_str(), O_RDWR | O_CREAT, (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH), &attr);
+    this->mqfdOrders = mq_open(name.c_str(), O_NONBLOCK | O_RDWR | O_CREAT, (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH), &attr);
     if (this->mqfdOrders == -1) {
         std::cerr << "Cannot open message queue\n";
     }
