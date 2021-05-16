@@ -27,13 +27,13 @@ Products::Products()
 
 void Products::dump()
 {
-    std::cout <<    " - Doe: " << this->doe << "\n"
-                    " - Tomato: " << this->tomato << "\n"
-                    " - Gruyere: " << this->gruyere << "\n"
-                    " - Ham: " << this->ham << "\n"
-                    " - Mushrooms: " << this->mushrooms << "\n"
-                    " - Steak: " << this->steak << "\n"
-                    " - Eggplant: " << this->eggplant << "\n"
+    std::cout <<    " - Doe:         " << this->doe << "\n"
+                    " - Tomato:      " << this->tomato << "\n"
+                    " - Gruyere:     " << this->gruyere << "\n"
+                    " - Ham:         " << this->ham << "\n"
+                    " - Mushrooms:   " << this->mushrooms << "\n"
+                    " - Steak:       " << this->steak << "\n"
+                    " - Eggplant:    " << this->eggplant << "\n"
                     " - Goat cheese: " << this->goat_cheese << std::endl;
 }
 
