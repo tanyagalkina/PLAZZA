@@ -42,10 +42,9 @@ ThreadPool::ThreadPool(std::size_t threads, Kitchen &kitchen)
     for (std::size_t i = 0; i < threads; i++) {
         _cooks.push_back(std::shared_ptr<std::thread>(new std::thread(&ThreadPool::exec, this))); }
 
-    std::thread checkTimeThread(&ThreadPool::checkTime, this);
-    std::cout << "i have created " << _cooks.size() << std::endl;
-    _workingCooks = 0;
-    checkTimeThread.join();
+    //std::thread checkTimeThread(&ThreadPool::checkTime, this);
+    //_workingCooks = 0;
+    //checkTimeThread.join();
 }
 
 int ThreadPool::getBusyCooks()
@@ -108,7 +107,7 @@ int ThreadPool::getOrder(std::string &buffer, struct mq_attr &attr)
     return 0;
 }
 
-void ThreadPool::processPizza(std::string &buffer)
+int ThreadPool::processPizza(std::string &buffer)
 {
     int orderID;
     int timeToCook;
@@ -124,7 +123,9 @@ void ThreadPool::processPizza(std::string &buffer)
 
     //while (!_kitchen->storage.hasEnoughFor(needed));
 
-    std::this_thread::sleep_for(std::chrono::seconds(timeToCook));
+    std::cout << "time_to_cook was: " << timeToCook << std::endl;
+    std::this_thread::sleep_for(std::chrono::seconds(timeToCook * _kitchen->_multiply));
+    return orderID;
 }
 
 void ThreadPool::exec()
@@ -133,11 +134,11 @@ void ThreadPool::exec()
     struct mq_attr attr;
 
     while (true) {
-        this->_mutex.lock();
+        /*this->_mutex.lock();
         if (_allQuit) {
             this->_mutex.unlock();
             break;
-        }
+        }*/
 
         //this->_mutex.lock();
         //if (checkKitchenTime() != 0) {
@@ -145,19 +146,22 @@ void ThreadPool::exec()
             //break;
         //}
 
-        this->_mutex.unlock();
+        //this->_mutex.unlock();
 
         this->_mutexOrder.lock();
-        if (getOrder(buffer, attr) != 0)
-            continue;
+        Messenger::get_order_from_reception(_kitchen->mqfdOrders, buffer);
+        std::cout << buffer << std::endl;
+        //if (getOrder(buffer, attr) != 0)
+         //   continue;
         this->_mutexOrder.unlock();
 
-        processPizza(buffer);
+        int orderNumber = processPizza(buffer);
+
 
         this->_mutexDelivery.lock();
         std::cout << std::this_thread::get_id() << std::endl;
-        Messenger::send_reply_to_reception(6, "3\n");
-        _workingCooks--;
+        Messenger::send_reply_to_reception(_kitchen->mqfdDeliveries, std::to_string(orderNumber));
+        //_workingCooks--;
         this->_mutexDelivery.unlock();
     }
 }

@@ -16,7 +16,7 @@ public:
         void initMessageQueue();
 
 public:
-        Kitchen(int cooks, int ownId, int refill);
+        Kitchen(int cooks, int ownId, int refill, int multiply);
         std::thread  signSupplyContract();
         void supplyKitchen();
 
@@ -24,6 +24,7 @@ public:
         int _ownId;
         int _nbCooks;
         int _refill;
+        int _multiply;
         mqd_t mqfdOrders;
         mqd_t mqfdDeliveries;
         Products storage;

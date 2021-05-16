@@ -28,6 +28,7 @@ void Messenger::create_new_pair(int kitchen_id)
     mqd_t mqfd;
     struct mq_attr attr;
     std::string name("/stub" + std::to_string(kitchen_id * 100) + "order");
+    //std::cout << "the name of the queue is" << name << std::endl;
 
 
     attr.mq_maxmsg = 10;
@@ -105,7 +106,7 @@ void Messenger::get_order_from_reception(mqd_t mqfd, std::string &buffer)
     //std::cout << "to get the order form reception we use is: " << mqfd << std::endl;
     ret = mq_receive(mqfd, buff, 20, 0);
     if (ret == -1 && errno != EAGAIN) {
-        std::cerr << "Cannot receive message." << std::endl;
+        std::cerr << "Cannot receive message from reception." << std::endl;
         //throw MessageQueueException("Receiving message failed in message queue", "Messenger");
     }
     if (ret > 0)

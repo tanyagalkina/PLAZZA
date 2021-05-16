@@ -40,7 +40,7 @@ private:
     void exec();
     int checkKitchenTime();
     int getOrder(std::string &buffer, struct mq_attr &attr);
-    void processPizza(std::string &buffer);
+    int processPizza(std::string &buffer);
     void checkTime();
 };
 

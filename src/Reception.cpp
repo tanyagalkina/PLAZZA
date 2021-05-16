@@ -76,18 +76,14 @@ void Reception::runWindow() {
 
         }
 
-        while (_pizza_to_do.size() >= 0) {
+        while (_pizza_to_do.size() != 0) {
             std::string currOrder = this->_pizza_to_do.front()._pizza_to_cook;
+            _pizza_to_do.erase(_pizza_to_do.begin());
 
             kitchenId = getAvailableKitchen();
-            std::cout << "kitchenID: " << kitchenId << std::endl;
+           // std::cout << "kitchenID: " << kitchenId << std::endl;
             std::cout << "the order lautet:" << currOrder << std::endl;
 
-            while (_pizza_to_do.size() != 0) {
-                std::string currOrder = this->_pizza_to_do.front()._pizza_to_cook;
-                _pizza_to_do.erase(_pizza_to_do.begin());
-
-                kitchenId = getAvailableKitchen();
                 if (kitchenId == 0) {
                     //std::cout << "there"
                     MDMutex.lock();
@@ -95,7 +91,7 @@ void Reception::runWindow() {
                     addKitchen();
                     MDMutex.unlock();
                     MessageMutex.unlock();
-                    std::cout << "the uniqueId is " << uniqueKitchenId << std::endl;
+                  //  std::cout << "the uniqueId is " << uniqueKitchenId << std::endl;
                     this->messenger->send_order_to_the_kitchen(uniqueKitchenId, currOrder);
                     MDMutex.lock();
                     updateKitchenBusy(uniqueKitchenId);
@@ -108,7 +104,6 @@ void Reception::runWindow() {
                 currOrder = "";
             }
         }
-    }
 }
 
 void Reception::updateKitchenBusy(int ownId)
@@ -123,19 +118,26 @@ void Reception::updateKitchenBusy(int ownId)
 ///returns 0 if all the kitchens are busy_max;
 int Reception::getAvailableKitchen()
 {
-    for (auto entry : _kitchen_mds)
-        std::cout << "available kitchens: "<< entry._ownId << std::endl;
+    if (_kitchen_mds.size() == 0) {
+        return 0;
+        std::cout << "there is no kitchen currently open\n";
+    }
+    //return _kitchen_mds[0]._ownId;
 
-    for (auto entry : _kitchen_mds)
-        std::cout << "BEFORE: "<< entry.currOrders << std::endl;
+    //for (auto entry : _kitchen_mds)
+       // std::cout << "available kitchens: "<< entry._ownId << std::endl;
+
+    //for (auto entry : _kitchen_mds)
+     //   std::cout << "BEFORE: "<< entry.currOrders << std::endl;
 
     std::sort(_kitchen_mds.begin(), _kitchen_mds.end(), [](const auto &a, const auto &b) { return a.currOrders < b.currOrders; });
 
     //_kitchen_mds.sort()
-    for (auto entry : _kitchen_mds)
-        std::cout << "AFTER: "<< entry.currOrders << std::endl;
+    //for (auto entry : _kitchen_mds)
+    //    std::cout << "AFTER: "<< entry.currOrders << std::endl;
 
-    printf("cur = %d -- max = %d\n",_kitchen_mds[0].currOrders, _kitchen_mds[0].orders_max);
+
+    //printf("cur = %d -- max = %d\n",_kitchen_mds[0].currOrders, _kitchen_mds[0].orders_max);
     if (_kitchen_mds[0].currOrders == _kitchen_mds[0].orders_max)
         return 0;
     return _kitchen_mds[0]._ownId;
@@ -178,13 +180,15 @@ void Reception::run() {
     std::string input;
     std::string buffer;
     std::vector<Order> orders;
-    this->addKitchen();
+    //this->addKitchen();
     std::thread window(&Reception::runWindow, this);
     //std::thread window(do_loop);
     //andree thread finisch();
     int order_nb = 0;
     struct mq_attr attr;
     while (true) {
+        if (_kitchen_mds.size() == 0)
+            continue;
         for (auto meta: _kitchen_mds) {
             mq_getattr(meta.deliveryQueue, &attr);
             if (attr.mq_curmsgs != 0) {
@@ -228,13 +232,14 @@ void Reception::run() {
 
 void Reception::addKitchen() {
 
+    this->uniqueKitchenId++;
     pid_t pid;
 
     this->_nbKitchens++;
     this->messenger->create_new_pair(this->uniqueKitchenId);
     pid = fork();
     if (pid == 0) {
-        Kitchen kitchen(this->_cooks, this->uniqueKitchenId, this->_refill);
+        Kitchen kitchen(this->_cooks, this->uniqueKitchenId, this->_refill, this->_multiply);
     }
 
     KMetaData metaData;
@@ -243,6 +248,5 @@ void Reception::addKitchen() {
     metaData.currOrders = 0;
     metaData.orders_max = this->_cooks * 2;
 
-    this->uniqueKitchenId++;
     _kitchen_mds.push_back(metaData);
 }

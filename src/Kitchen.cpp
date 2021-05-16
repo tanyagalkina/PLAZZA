@@ -23,11 +23,12 @@ std::thread Kitchen::signSupplyContract()
 }
 
 
-Kitchen::Kitchen(int cooks, int ownId, int refill)
+Kitchen::Kitchen(int cooks, int ownId, int refill, int multiply)
 {
     std::string buffer;
     this->_ownId = ownId;
-    this->_refill;
+    this->_refill = refill;
+    this->_multiply = multiply;
 
     this->initMessageQueue();
     supply = this->signSupplyContract();
@@ -36,6 +37,7 @@ Kitchen::Kitchen(int cooks, int ownId, int refill)
     this->_pool->joinAll();
     supply.detach();
     Messenger::send_reply_to_reception(mqfdDeliveries, "0");
+    std::cout << "We are closing\n";
     exit (0);
 
 }
@@ -44,6 +46,7 @@ void Kitchen::initMessageQueue()
 {
     struct mq_attr attr;
     std::string name("/stub" + std::to_string((this->_ownId) * 100) + "order");
+    //std::cout << "the queue created by the kitchen is:" << name << std::endl;
 
     attr.mq_maxmsg = 10;
     attr.mq_msgsize = 20;
