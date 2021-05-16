@@ -61,8 +61,7 @@ Reception::Reception(float mulitpy, int cooks, int refill) : _multiply(mulitpy),
     this->uniqueKitchenId = 1;
 }
 
-void Reception::runWindow()
-{
+void Reception::runWindow() {
     int i = 0;
     int kitchenId = 0;
 
@@ -76,31 +75,35 @@ void Reception::runWindow()
             continue;
 
         }
-        while(this->_pizza_to_do.size() != 0) {
+        while (this->_pizza_to_do.size() != 0) {
             std::string currOrder = this->_pizza_to_do.front()._pizza_to_cook;
 
             std::cout << "the order lautet:" << currOrder << std::endl;
-            _pizza_to_do.erase(_pizza_to_do.begin());
 
-            kitchenId = getAvailableKitchen();
-            if (kitchenId == 0) {
-                //std::cout << "there"
+            while (_pizza_to_do.size() != 0) {
+                std::string currOrder = this->_pizza_to_do.front()._pizza_to_cook;
+                _pizza_to_do.erase(_pizza_to_do.begin());
+
+                kitchenId = getAvailableKitchen();
+                if (kitchenId == 0) {
+                    //std::cout << "there"
+                    MDMutex.lock();
+                    MessageMutex.lock();
+                    addKitchen();
+                    MDMutex.unlock();
+                    MessageMutex.unlock();
+                    std::cout << "the uniqueId is " << uniqueKitchenId << std::endl;
+                    this->messenger->send_order_to_the_kitchen(uniqueKitchenId, currOrder);
+                    MDMutex.lock();
+                    updateKitchenBusy(uniqueKitchenId);
+                    MDMutex.unlock();
+                } else
+                    this->messenger->send_order_to_the_kitchen(kitchenId, currOrder);
                 MDMutex.lock();
-                MessageMutex.lock();
-                addKitchen();
+                updateKitchenBusy(kitchenId);
                 MDMutex.unlock();
-                MessageMutex.unlock();
-                std::cout << "the uniqueId is " << uniqueKitchenId << std::endl;
-                this->messenger->send_order_to_the_kitchen(uniqueKitchenId, currOrder);
-                MDMutex.lock();
-                updateKitchenBusy(uniqueKitchenId);
-                MDMutex.unlock();
-            } else
-                this->messenger->send_order_to_the_kitchen(kitchenId, currOrder);
-            MDMutex.lock();
-            updateKitchenBusy(kitchenId);
-            MDMutex.unlock();
-            currOrder = "";
+                currOrder = "";
+            }
         }
     }
 }

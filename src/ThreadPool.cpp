@@ -45,14 +45,6 @@ void ThreadPool::joinAll()
     }
 }
 
-/* note:
- *  added 'errno != EAGAIN' to not print error message when queue is empty
- *  added O_NONBLOCK to Kitchen::initMessageQueue()
- *  now since the message queue of the kitchen is not blocking anymore the
- *  counter is working like it should and for now its printing the message
- *  after 5 seconds of doing nothing
- */
-
 int ThreadPool::checkKitchenTime()
 {
     if (_workingCooks == 0 && !_timeIsCounting) {
@@ -105,7 +97,7 @@ void ThreadPool::processPizza(std::string &buffer)
 
     const auto &needed = getProductsFromPizzaType(pizzaType);
 
-    while (_kitchen->storage.hasEnoughFor(needed));
+    //while (!_kitchen->storage.hasEnoughFor(needed));
 
     std::this_thread::sleep_for(std::chrono::seconds(timeToCook));
 }
