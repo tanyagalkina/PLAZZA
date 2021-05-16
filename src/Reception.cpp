@@ -74,35 +74,43 @@ void Reception::runWindow()
         } catch (const ParseError &e) {
             std::cerr << "Bad input: " << e.what() << std::endl;
             continue;
-        }/*
-        for (auto pizzas : _pizza_to_do) {
+
+        }
+        std::string currOrder = this->_pizza_to_do.front()._pizza_to_cook;
+        std::cout << "the order lautet:" << currOrder << std::endl;
+        _pizza_to_do.erase(_pizza_to_do.begin());
 
             kitchenId = getAvailableKitchen();
             if (kitchenId == 0) {
+                //std::cout << "there"
                 MDMutex.lock();
                 MessageMutex.lock();
                 addKitchen();
                 MDMutex.unlock();
                 MessageMutex.unlock();
-                this->messenger->send_order_to_the_kitchen(uniqueKitchenId, pizzas._pizza_to_cook);
+                std::cout << "the uniqueId is " << uniqueKitchenId << std::endl;
+                this->messenger->send_order_to_the_kitchen(uniqueKitchenId, currOrder);
                 MDMutex.lock();
                 //update kitchenMetaData vector (uniqueKitchenId)
                 MDMutex.unlock();
             }
             else
-                this->messenger->send_order_to_the_kitchen(kitchenId, pizzas._pizza_to_cook);
+                this->messenger->send_order_to_the_kitchen(kitchenId, currOrder);
             MDMutex.lock();
             //_kitchen_mds. update(KitchenId)
             MDMutex.unlock();
-        }
-*/
+
+
     }
 }
 
 ///returns 0 if all the kitchens are busy_max;
 int Reception::getAvailableKitchen()
 {
-    return 1;
+    for (auto entry : _kitchen_mds)
+        std::cout << "available kitchens: "<< entry._ownId << std::endl;
+
+    return 0;
 }
 
 void Reception::parse_this_buffer(std::string buffer, int meta_own_id)
@@ -191,7 +199,7 @@ void Reception::addKitchen() {
     this->messenger->create_new_pair(this->uniqueKitchenId);
     pid = fork();
     if (pid == 0) {
-        Kitchen kitchen(this->_cooks, this->uniqueKitchenId);
+        Kitchen kitchen(this->_cooks, this->uniqueKitchenId, this->_refill);
     }
 
     KMetaData metaData;
