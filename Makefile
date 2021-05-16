@@ -34,6 +34,7 @@ SRC 				= src/main.cpp 	\
 					  src/Message.cpp\
 					  src/Messenger.cpp\
 					  src/Parser.cpp\
+					  src/Products.cpp\
 
 TEST_SRC 			= src/Reception.cpp\
 					  src/ThreadPool.cpp\
