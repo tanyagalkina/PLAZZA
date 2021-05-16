@@ -10,6 +10,7 @@
 #include <sstream>
 #include <algorithm>
 #include <memory>
+#include <ctype.h>
 
 #include "Error.hpp"
 #include "Reception.hpp"
@@ -26,64 +27,47 @@ void usage()
                 << "\t[int] refill time" << std::endl;
     exit(0);
 }
-/*
-void errorhandling(int ac, char **av)
-{
-    if (ac == 2 && strcmp(av[1], "-h") == 0)
-        usage();
-
-    if (ac != 4)
-        throw BadArgument("rerun with -h");
-
-    std::string mult = std::to_string(std::stof(av[1]));
-    mult.erase(std::remove(mult.begin(), mult.end(), '0'), mult.end());
-
-    if (strlen(av[1]) != mult.size() && (std::stoi(av[1]) != std::stof(av[1])))
-        throw BadArgument("rerun with -h");
-    if (strlen(av[2]) != strlen(std::to_string(std::stoi(av[2])).c_str()))
-        throw BadArgument("rerun with -h");
-    if (strlen(av[3]) != strlen(std::to_string(std::stoi(av[3])).c_str()))
-        throw BadArgument("rerun with -h");
-}*/
-// @todo: think about a clever logging system
-
-// std::fstream Log()
-//{
-    //std::fstream file("logfile", std::fstream::out | std::fstream::app);
-    //return file;
-//}
-//static std::fstream mlog("logfile", std::fstream::out | std::fstream::app);
 
 void print(const std::string &msg)
 {
     std::cout << msg << std::endl;
 }
 
+int errorhandling(std::string s)
+{
+    int dot_counter = 0;
+    for (char c : s) {
+        if (!isdigit(c) && c != '.')
+            return 1;
+        if (c == '.')
+            dot_counter++;
+        if (dot_counter > 1)
+            return 1;
+    }
+    return 0;
+}
 
 int main(int ac, char **av)
 {
     std::cout << "Main thread: " << std::this_thread::get_id() << std::endl;
     if (ac == 2 && strcmp(av[1], "-h") == 0)
         usage();
-    if (ac != 4)
-        throw BadArgument("rerun with -h");
+    if (ac != 4 || errorhandling(av[1]) != 0) {
+        std::cerr << "Bad argument. Rerun with -h" << std::endl;
+        return 84;
+    }
 
     float multiplicator = 0.0;
     int cooks = 0;
     int refill = 0;
     try {
-        //errorhandling(ac, av);
-        multiplicator = parse_integer(av[1]); // need a parse float maybe redo error handling to deal with it
+        multiplicator = std::atof(av[1]);
         cooks = parse_integer(av[2]);
         refill = parse_integer(av[3]);
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
         return 84;
     }
-
-    //float multiplicator = std::stof(av[1]);
-    //int cooks = std::stoi(av[2]);
-    //int refill = std::stoi(av[3]);
 
     if (multiplicator <= 0 || cooks <= 0 || refill <= 0) {
         std::cerr << "Arguments must be positiv" << std::endl;
