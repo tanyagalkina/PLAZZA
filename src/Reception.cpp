@@ -76,9 +76,10 @@ void Reception::runWindow()
             continue;
 
         }
-        std::string currOrder = this->_pizza_to_do.front()._pizza_to_cook;
-        std::cout << "the order lautet:" << currOrder << std::endl;
-        _pizza_to_do.erase(_pizza_to_do.begin());
+
+        while (_pizza_to_do.size() != 0) {
+            std::string currOrder = this->_pizza_to_do.front()._pizza_to_cook;
+            _pizza_to_do.erase(_pizza_to_do.begin());
 
             kitchenId = getAvailableKitchen();
             if (kitchenId == 0) {
@@ -99,6 +100,7 @@ void Reception::runWindow()
             MDMutex.lock();
             updateKitchenBusy(kitchenId);
             MDMutex.unlock();
+        }
 
     }
 }
