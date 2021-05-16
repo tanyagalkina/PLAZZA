@@ -18,6 +18,8 @@ ThreadPool::ThreadPool(std::size_t threads, Kitchen &kitchen)
     for (std::size_t i = 0; i < threads; i++) {
         _cooks.push_back(std::shared_ptr<std::thread>(new std::thread(&ThreadPool::exec, this))); }
 
+    std::cout << "i have created " << _cooks.size() << std::endl;
+
     _workingCooks = 0;
 }
 

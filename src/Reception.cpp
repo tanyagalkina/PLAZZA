@@ -76,9 +76,11 @@ void Reception::runWindow()
             continue;
 
         }
-        std::string currOrder = this->_pizza_to_do.front()._pizza_to_cook;
-        std::cout << "the order lautet:" << currOrder << std::endl;
-        _pizza_to_do.erase(_pizza_to_do.begin());
+        while(this->_pizza_to_do.size() != 0) {
+            std::string currOrder = this->_pizza_to_do.front()._pizza_to_cook;
+
+            std::cout << "the order lautet:" << currOrder << std::endl;
+            _pizza_to_do.erase(_pizza_to_do.begin());
 
             kitchenId = getAvailableKitchen();
             if (kitchenId == 0) {
@@ -93,13 +95,13 @@ void Reception::runWindow()
                 MDMutex.lock();
                 updateKitchenBusy(uniqueKitchenId);
                 MDMutex.unlock();
-            }
-            else
+            } else
                 this->messenger->send_order_to_the_kitchen(kitchenId, currOrder);
             MDMutex.lock();
             updateKitchenBusy(kitchenId);
             MDMutex.unlock();
-
+            currOrder = "";
+        }
     }
 }
 
@@ -142,6 +144,13 @@ void Reception::parse_this_buffer(std::string buffer, int meta_own_id)
         }
     }
     else {
+        for (int i = 0; i < _kitchen_mds.size(); i++) {
+            if (_kitchen_mds[i]._ownId == meta_own_id)
+                _kitchen_mds[i].currOrders--;
+
+
+        }
+
         for (int i = 0; i < _orders.size(); i++) {
             if (value == _orders[i].order_nb) {
                 _orders[i].pizza_finished++;
