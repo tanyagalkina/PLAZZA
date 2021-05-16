@@ -26,6 +26,19 @@ void Reception::getInput(int &order_nb)
     //_orders.clear();
     std::string input;
     std::getline(std::cin, input);
+    /*if (input == "status") {
+        if (_kitchen_mds.size() != 0) {
+            std::cout << _kitchen_mds.size() << std::endl;
+            for (auto kitchen: _kitchen_mds) {
+                std::cout << "Kitchen nbr: " << kitchen._ownId << " and it has: " << kitchen.currOrders
+                          << " pizza cooking\n";
+                this->messenger->send_order_to_the_kitchen(kitchen._ownId, "status");
+            }
+            return;
+        }
+        std::cout << "Currently no kitchen is available, please order something" << std::endl;
+        return;
+    }*/
     Order order;
     order = parse_order(input);
     order.input = input;
@@ -159,10 +172,7 @@ void Reception::parse_this_buffer(std::string buffer, int meta_own_id)
         for (int i = 0; i < _kitchen_mds.size(); i++) {
             if (_kitchen_mds[i]._ownId == meta_own_id)
                 _kitchen_mds[i].currOrders--;
-
-
         }
-
         for (int i = 0; i < _orders.size(); i++) {
             if (value == _orders[i].order_nb) {
                 _orders[i].pizza_finished++;

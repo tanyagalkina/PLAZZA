@@ -73,7 +73,7 @@ int main(int ac, char **av)
     int refill = 0;
     try {
         //errorhandling(ac, av);
-        multiplicator = std::stof(av[1]); // need a parse float maybe redo error handling to deal with it
+        multiplicator = parse_integer(av[1]); // need a parse float maybe redo error handling to deal with it
         cooks = parse_integer(av[2]);
         refill = parse_integer(av[3]);
     } catch (const std::exception &e) {
