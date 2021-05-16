@@ -26,17 +26,19 @@ void Reception::getInput(int &order_nb)
     //_orders.clear();
     std::string input;
     std::getline(std::cin, input);
-    if (input == "status") {
-        if (!_kitchen_mds.empty()) {
+    /*if (input == "status") {
+        if (_kitchen_mds.size() != 0) {
+            std::cout << _kitchen_mds.size() << std::endl;
             for (auto kitchen: _kitchen_mds) {
                 std::cout << "Kitchen nbr: " << kitchen._ownId << " and it has: " << kitchen.currOrders
                           << " pizza cooking\n";
-                this->messenger->send_order_to_the_kitchen(kitchen.orderQueue, "status");
+                this->messenger->send_order_to_the_kitchen(kitchen._ownId, "status");
             }
+            return;
         }
         std::cout << "Currently no kitchen is available, please order something" << std::endl;
         return;
-    }
+    }*/
     Order order;
     order = parse_order(input);
     order.input = input;
