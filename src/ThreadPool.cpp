@@ -104,7 +104,9 @@ int ThreadPool::processPizza(std::string &buffer)
 
     const auto &needed = getProductsFromPizzaType(pizzaType);
 
-    //while (!_kitchen->storage.hasEnoughFor(needed));
+    while (!_kitchen->storage.hasEnoughFor(needed));
+
+    _kitchen->storage -= needed;
 
     std::this_thread::sleep_for(std::chrono::seconds(timeToCook * _kitchen->_multiply));
     return orderID;
