@@ -19,6 +19,7 @@ struct KMetaData
     int _ownId;
     int currOrders;
     mqd_t orderQueue;
+    std::thread closing;
     mqd_t deliveryQueue;
 
 };

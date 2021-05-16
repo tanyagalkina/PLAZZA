@@ -156,6 +156,12 @@ int Reception::getAvailableKitchen()
     return _kitchen_mds[0]._ownId;
 }
 
+std::thread mq_closing(int meta_own_id)
+{
+    //make new thread with function which sleeps for 5sec, and then send to the kitchen exit message * anzahl von cooks
+    //dat jede cook kriegt diese exit and break then
+    // wenn kuche bekommt ein order, er musst diese thread von metadata detach
+}
 void Reception::parse_this_buffer(std::string buffer, int meta_own_id)
 {
     int value = parse_integer(buffer);
@@ -170,8 +176,12 @@ void Reception::parse_this_buffer(std::string buffer, int meta_own_id)
     }
     else {
         for (int i = 0; i < _kitchen_mds.size(); i++) {
-            if (_kitchen_mds[i]._ownId == meta_own_id)
+            if (_kitchen_mds[i]._ownId == meta_own_id) {
                 _kitchen_mds[i].currOrders--;
+                if (_kitchen_mds[i].currOrders == 0) {
+                    _kitchen_mds[i].closing = mq_closing(meta_own_id);
+                }
+            }
         }
         for (int i = 0; i < _orders.size(); i++) {
             if (value == _orders[i].order_nb) {
